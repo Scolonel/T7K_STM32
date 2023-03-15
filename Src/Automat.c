@@ -728,6 +728,7 @@ void Run_At (void)
         Indxi = IndxP2LW; // // установим индекс выбранного источника для измерения
         
         MsgStat[Ind_LW] = 'o'; // 
+        //MsgStat[Ind_LW] = 48+Ind_LW; // 0-1-2
         sprintf((char*)MsgAuto[1], "%s",MsgStat);
         //memcpy(MsgAuto[1],MsgStat,strlen(MsgStat)); 
         NeedReDraw = 1;
@@ -879,7 +880,7 @@ void Run_At (void)
       PonA.LW_BA[Cnt_BA] = PMWavelenght; // длина волны источника Slave в режиме АВТОМАТ
       PonA.PS_BA[IndxP2LW] = fParamOpt; // мощность источника Slave в режиме АВТОМАТ
       // второй параметр передаваемая мощность в принципе не важна
-      MsgStat[5+Cnt_BA] = 'o'; // 
+      MsgStat[6+Cnt_BA] = 'o'; // 
       sprintf((char*)MsgAuto[1], "%s",MsgStat);
       Mod_At_cnt = 0;
       NeedReDraw = 1;

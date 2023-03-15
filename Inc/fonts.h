@@ -96,7 +96,7 @@ extern FontDef_t Font_16x26;
 /**
  * @}
  */
-#define MAX1 572//588
+#define MAX1 550//588 15/03/2023 сократим длину цифр и тире на 1 пиксель, итого 22 из 572
 #define MAX2 1111
 #define MAX3      1512 // = tab20u 888 = tabSG3//974 = tab16p
 #define MAX4      244 //
