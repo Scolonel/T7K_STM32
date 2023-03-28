@@ -859,6 +859,10 @@ void ParseCMD (void) // разбор данных принятых по uart1
                   if (!(isnan(fparams[0])||(fparams[0]<=-9.0)||(fparams[0]>9.0)))      // базовые уровни ORL от -9.0 до +9.0 мощности источника
                   {
                     CoeffPM.BaseRet[params[0]]= fparams[0];
+                    // присваиваем текщим значениям смещения ORL из таблици настройки
+                    for(int i=0; i<3; i++)
+                      BaseRetCurrORL[i] = CoeffPM.BaseRet[i];
+                    // чтобы в настройке не вылезало значек коррекции! 28.03.2023
                     EnaSendOK = 1;
                     NeedSave |= 0x02; 
                   }
