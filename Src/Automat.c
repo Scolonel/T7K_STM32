@@ -382,6 +382,7 @@ void Run_At (void)
     {
       Mod_At_cnt = MaxAT;
       Mod_At = Wt;
+      OpticCMD=NOTcmd; //05.05.2023 сбросим принятые команды сами от себя... при неответе от Slave
       memcpy(MsgAuto[0],Msg[4],strlen(Msg[4])); // ошибка
       memcpy(MsgAuto[1],Msg[5],strlen(Msg[5])); // калибровки
       NeedReDraw = 1;
