@@ -455,6 +455,9 @@ if (UserMeasConfig.ModeIP1aMem>2) Err |=0x1000;//// режим индикации P1a
 if (UserMeasConfig.P2ModeMem>1) Err |=0x2000;//// режим индикации P2 
 if (UserMeasConfig.IndxP2LWMem>6) Err |=0x4000;//// индекс длины волны измерителя P2 калибровочные длины волн их 7
 if (UserMeasConfig.ScModeMem>4) Err |=0x8000;//// индекс длины волны измерителя P2 калибровочные длины волн их 7
+if (UserMeasConfig.AutoOff>1) Err |=0x10000;//// признак авто выключения...
+if (UserMeasConfig.AutoOffMod>3) Err |=0x20000;//// признак авто выключения...
+
 //uint8_t ModeIP1aMem; // режим индикации P1а
 //uint8_t P2ModeMem; // режим индикации P2
 //uint8_t IndxP2LWMem; //
@@ -489,6 +492,8 @@ void FixErrUserMC (uint32_t Err) //  фиксируем  (исправляем настройки)
     if (Err & 0x2000) UserMeasConfig.P2ModeMem=0; // 
     if (Err & 0x4000) UserMeasConfig.IndxP2LWMem=2; // 
     if (Err & 0x8000) UserMeasConfig.ScModeMem=0; // 
+    if (Err & 0x10000) UserMeasConfig.AutoOff=0; // 
+    if (Err & 0x20000) UserMeasConfig.AutoOffMod=0; // 
     
   }
 

@@ -25,11 +25,14 @@
 //#define RELEASETIME 1676628000 // начальное врем€ установки релиза 17.02.2023 10:00:00    верси€ - 38// общие в MAIN и прочее 1673258400
 //#define RELEASETIME  // начальное врем€ установки релиза 15.03.2023 10:00:00    верси€ - 41// общие в MAIN и прочее 1673258400
 //#define RELEASETIME 1682503200 // начальное врем€ установки релиза 26.04.2023 10:00:00    верси€ - 44// 
-#define RELEASETIME 1683280800 // начальное врем€ установки релиза 05.05.2023 10:00:00    верси€ - 45// 
+//#define RELEASETIME 1683280800 // начальное врем€ установки релиза 05.05.2023 10:00:00    верси€ - 45// 
+#define RELEASETIME 1709892000 // начальное врем€ установки релиза 15.08.2023 10:00:00    верси€ - 46// 
 
 #define RELEASEYEAR 23
-#define RELEASEMONTH 5
-#define RELEASEDATE 5
+#define RELEASEMONTH 8
+#define RELEASEDATE 15
+// врем€ информации до автовыключени€...   
+#define LASTTIMEOFF 30   
    
 #define KEYSREAD 50 // период чтени€ клавиатуры
 #define ADCREAD 12 // период проверки состо€ни€ ј÷ѕ P1
@@ -138,7 +141,7 @@ enum Condition {dBm, dB, W, RCell, WCell, Loss_Lim_Set, Hold, WrHold}; // режим 
 enum CondSource {OFFs, SCW, S27W, S2KW, SCW_P, OFF_S}; // дл€ источника + OFF_S (установка мощности источника)
 enum AtM {Wt, Orl, Px, Sl_Px, Sl_Orl, AskOrl, AnsOrl, Lnx, LnR, CmdSw, AnsOK, SavPw, CalPw, Err_Ans, View, Clb_Err, LnR_Clb, Cfg_At}; // подрежимы автоматического режима
 enum CondView {LOSS, ORL, LNM, BasV}; // подрежимы дл€ индикации результатов PON измерител€
-enum SubSetting {sTime, sNumF, sLOSSm, sLOSS, sORL, sSCp, sMem, sSWm, sVer};   // установка времени, Ќомер волокна и признак инкремента, порогов индикации затуханий P1a, мощности источиков, ћеню очистки пам€ти, ѕереключатель признаков сохранени€ ORL-Loss-Ln in At.
+enum SubSetting {sTime, sAutoOff, sNumF, sLOSSm, sLOSS, sORL, sSCp, sMem, sSWm, sVer};   // установка времени, Ќомер волокна и признак инкремента, порогов индикации затуханий P1a, мощности источиков, ћеню очистки пам€ти, ѕереключатель признаков сохранени€ ORL-Loss-Ln in At.
 enum CodeCmd {NOTcmd, SMPcmd, SLAcmd, YPcmd, SWMcmd, SOKcmd, SRLcmd, SWLcmd, SLOcmd}; // тип(номер) прин€той команды по оптике
 // структура блока пам€ти прибора
 typedef struct
@@ -247,7 +250,9 @@ uint8_t ModeIMem; // режим индикации P1
 uint8_t ModeIP1aMem; // режим индикации P1а
 uint8_t P2ModeMem; // режим индикации P2
 uint8_t IndxP2LWMem; //индекс длины волны измерител€ P2
-
+uint8_t AutoOff; // признак авто выключени€ ( возможно врем€ не более ...) пока почиститим если FFFF до 0 нет, если есть 1...только дл€ индикации
+uint8_t AutoOffMod; // –ежим  авто выключени€ ( различные времена),ј. . предложил устанавливать в настройках, после времени 
+// включение/выключение двум€ кнопками Mode+S долгое нажатие, не прижилось как и кнопки ¬верх+¬низ
 } TAB_USER;
 
 // структура  данных PON AUTO

@@ -32,6 +32,19 @@ void KeyBoardAnsver( uint8_t CodeKeys)
   
   switch (CodeKeys)
   {
+           //_____________________________________________________________________________________________ 
+  //case 0x6B: // комбинация клавиш 0x04-0x10 (долгое) включение выключение авто выключения
+  case 0x57: // комбинация клавиш 0x08-0x20 вверх-вниз(долгое) включение выключение авто выключения
+    if(UserMeasConfig.AutoOff)
+      UserMeasConfig.AutoOff=0;
+    else
+      UserMeasConfig.AutoOff=1;
+                    NeedSaveChange |=0x10; // сохраняем пользовательские изменения (Номер волокна и признак авто инкремента)
+    myBeep(50);
+    HAL_Delay(200);
+    myBeep(50);
+      
+break;
        //_____________________________________________________________________________________________ 
   case 0x76: // комбинация клавиш 0x01-0x08 (долгое) Вызов калибровки в режиме автомат
           switch (CondWork)
@@ -60,8 +73,8 @@ void KeyBoardAnsver( uint8_t CodeKeys)
                 }
               }
             }
-          //SettingPrm.PowSc[0]
-          break;
+            //SettingPrm.PowSc[0]
+            break;
           }
     myBeep(500);
     HAL_Delay(800);
@@ -133,6 +146,13 @@ void KeyBoardAnsver( uint8_t CodeKeys)
       // переключаемся по установкам
       switch(SetupMod)
       {
+      case sAutoOff:
+        if(UserMeasConfig.AutoOff)
+          UserMeasConfig.AutoOff=0;
+        else
+          UserMeasConfig.AutoOff=1;
+        break;
+        
       case sNumF:
         if(SettingPrm.EnaAutoInkrNF) SettingPrm.EnaAutoInkrNF=0;
         else SettingPrm.EnaAutoInkrNF=1;
@@ -149,8 +169,8 @@ void KeyBoardAnsver( uint8_t CodeKeys)
         if(IndxEnaSave)
         {
           Indx = 1<<(IndxEnaSave-1);
-        if(SettingPrm.EnaWrtMem & Indx) SettingPrm.EnaWrtMem &=~Indx;
-        else SettingPrm.EnaWrtMem |=Indx;
+          if(SettingPrm.EnaWrtMem & Indx) SettingPrm.EnaWrtMem &=~Indx;
+          else SettingPrm.EnaWrtMem |=Indx;
         }
         break;
       case sMem:
@@ -445,6 +465,10 @@ void KeyBoardAnsver( uint8_t CodeKeys)
         if(IndxEditClock<6)IndxEditClock++;
         else IndxEditClock = 0;
         break;
+      case sAutoOff:
+        if(UserMeasConfig.AutoOffMod<3)UserMeasConfig.AutoOffMod++;
+        else UserMeasConfig.AutoOffMod = 0;
+        break;
       case sNumF:
         if(IndxEditNumFbr>0)IndxEditNumFbr--;
         else IndxEditNumFbr = 5;
@@ -488,6 +512,9 @@ void KeyBoardAnsver( uint8_t CodeKeys)
       switch(SetupMod)
       {
       case sTime:
+        SetupMod=sAutoOff;
+        break;
+      case sAutoOff:
         if((DeviceConfig.CfgPM)||(DeviceConfig.CfgL)) // есть измеритель or AL w/o PM
         {
           SetupMod=sNumF; 
@@ -1642,6 +1669,7 @@ uint8_t SetNeedCondWork (uint8_t SetConditionWork)
         {
           Error_Handler();
         }
+        HAL_UART_DMAStop(&huart2); // добавил сюда малоли что? винул при перелючении в авто ...
         HAL_UART_Receive_IT(&huart2, RxBufOpt,1); // ждем принятия первого байта из внешнего мира
         YesLW=0;
         break;

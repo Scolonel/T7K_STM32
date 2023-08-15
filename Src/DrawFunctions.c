@@ -89,6 +89,43 @@ void ShowLimORL(void)
   //SSD1305_GotoXY(13,8);
   //SSD1305_PutsN((void*)Strb, (void*)TabSG2,(1));// мелкие буквы для второй длины волны
 }
+/* Экран установки автовыключения*/
+void ShowSetAutoOff(void)
+{
+  SSD1305_Fill(0); /* очистка экрана*/
+  sprintf((char*)Str,"Авто Выкл.[%c]", (UserMeasConfig.AutoOff)?('+'):(' ')) ;
+  // значения
+  sprintf((char*)Strm,"Выбор ") ;
+  sprintf((char*)Stra,"минут") ;
+  sprintf((char*)Strb,"%d",2<<UserMeasConfig.AutoOffMod) ; // время авто выкл в минутах 2,4,8,16
+  //sprintf((char*)Strm,"%.2f",UserMeasConfig.Lim_LS[4]) ;
+  
+  SSD1305_GotoXY(12,24);
+  SSD1305_PutsN((void*)Str, (void*)TabSG2, 1);// мелкие буквы созранение затухания
+  SSD1305_GotoXY(13,12);
+  SSD1305_PutsN((void*)Stra, (void*)TabSG2,(1));// мелкие буквы надпись LOSS
+  SSD1305_GotoXY(60,12);
+  SSD1305_PutsN((void*)Strb, (void*)TabSG2,1);// мелкие буквы LOSS значение
+  //SSD1305_GotoXY(70,8);
+  //SSD1305_PutsN((void*)Strb, (void*)TabSG2,(IndxEditLOSS==2)?(0):(1));// мелкие буквы LOSS для второй длины волны 1490
+  SSD1305_GotoXY(13,0);
+  SSD1305_PutsN((void*)Strm, (void*)TabSG2,1);// мелкие буквы LOSS для третьей длины волны 1550
+ // прорисуем длины волн источников
+  // значения
+  //sprintf((char*)Stra,"%.2f",CalibrLW[2]/1000.) ;
+  //sprintf((char*)Strb,"%.2f",CalibrLW[3]/1000.) ;
+  //sprintf((char*)Strm,"%.2f",CalibrLW[4]/1000.) ;
+
+  //SSD1305_GotoXY(13,0);
+  //SSD1305_PutsN((void*)Stra, (void*)TabSG2,(1));// мелкие буквы для первой длины волны 1310
+  //SSD1305_GotoXY(13,8);
+  //SSD1305_PutsN((void*)Strb, (void*)TabSG2,(1));// мелкие буквы для второй длины волны 1490
+  //SSD1305_GotoXY(13,16);
+  //SSD1305_PutsN((void*)Strm, (void*)TabSG2,(1));// мелкие буквы  для третьей длины волны 1550
+  
+  
+}
+
 /* Экран установки порогов LOSS с 15.09.2021 для всех длин волн один порог*/
 void ShowLimLOSS(void)
 {
@@ -1169,9 +1206,32 @@ void ShowVer(void)
   
   void DrawMod (uint8_t Mode)
   {
+    uint8_t ModeIndDraw=1;//1
+    // здесь попререключаем инверсией в зависимости от времени до выключения
+    if(UserMeasConfig.AutoOff)
+    {
+     if(CntPwrOffCount<LASTTIMEOFF)
+     {
+       ModeIndDraw = CntPwrOffCount&0x1;
+       //myBeep(20);
+     }
+     else
+       ModeIndDraw = 0;
+    }
+    
     sprintf((char*)StrDrM,"%c",48 + Mode) ;
     SSD1305_GotoXY(102,8);
-    SSD1305_PutsN((void*)StrDrM, (void*)TabSG5, 1);
+    SSD1305_PutsN((void*)StrDrM, (void*)TabSG5, ModeIndDraw);
+    // если авто выкл нарисуем кружок
+    //if(UserMeasConfig.AutoOff)
+    //{
+    // SSD1305_DrawCircle(108, 15, 7 ,1);
+    //}
+    // линии для прорисовки, три белые одна черная нижняя
+    SSD1305_DrawLine(102, 8, 102 ,22, 1);// вертикальная правая
+    SSD1305_DrawLine(114, 8, 114 ,22, 1);// вертикальная левая
+    SSD1305_DrawLine(102, 22, 114 ,22, 1);// горизонт нижняя
+    SSD1305_DrawLine(102, 23, 114 ,23, 0);// горизонт черная нижняя
   }
   
   void ShowBatLvl (uint8_t ProcBat)
@@ -1233,6 +1293,9 @@ void ShowVer(void)
         {
         case sTime:
         ShowCurrTime(); /* индикация времени упрощенная*/
+        break;
+        case sAutoOff:
+        ShowSetAutoOff(); /* Экран установки автовыключения*/
         break;
         case sNumF:
         ShowNumFbr(); /* индикация установки номера волокна*/
