@@ -174,7 +174,7 @@ void WriteNeedStruct (int NumStruct)
 uint32_t BeginConfig (void) // начальная конфигурация
 {
   uint32_t CodeError = 0; //
-    uint32_t ErrDev;
+    uint32_t ErrDev=0;
   
   // проверка наличия микросхемы управления ключами 95555 на шине I2C(2)
   //конфигурация PCA9555 ( клавитатура ) адрес 0x20

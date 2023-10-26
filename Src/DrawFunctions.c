@@ -394,7 +394,8 @@ void ShowVer(void)
     
   }
   
-  /* Ёкран заставки, шрифты TabSG1 изменены - заужены*/
+  /* Ёкран заставки, шрифты TabSG1 изменены - заужены
+  шрифт не содержит полный алфавит*/
   void ShowWelcome(void)
   {
     SSD1305_Fill(0); /* очистка экрана*/
@@ -405,13 +406,14 @@ void ShowVer(void)
     SSD1305_GotoXY(94,24);
     SSD1305_PutsN((void*)Str, (void*)TabSG2, 1);
     sprintf((char*)Str,"Ќѕ  —в€зь—ервис") ;
-    //sprintf((char*)Str,"%d",RTC_SysTime(&hrtc));
+    //sprintf((char*)Str,"%d",RTC_SysTime(&hrtc));    // формат вывода, загрузка строки функцией sprintf, определение координат размещени€ строки, вывод строки в нужном шрифте
+    //sprintf((char*)Str,"Ѕазовый Base") ;
     SSD1305_GotoXY(13,16);
     SSD1305_PutsN((void*)Str, (void*)TabSG2, 1);
     sprintf((char*)Str,"%s",DeviceConfig.NameDevice) ;
     SSD1305_GotoXY(12,0);
     SSD1305_PutsN((void*)Str, (void*)TabSG1, 1);
-    //  SSD1305_DrawRectangle(12,0,104,32,1);
+    //  SSD1305_DrawRectangle(12,0,104,32,1);     // тест внешнего периметра отображени€
     
   }
   
@@ -1238,7 +1240,7 @@ void ShowVer(void)
   
   void ShowBatLvl (uint8_t ProcBat)
   {
-    sprintf((char*)StrBat,"%c", 'a' + (uint8_t)(ProcBat/8.75)) ;
+    sprintf((char*)StrBat,"%c", 'a' + (uint8_t)(ProcBat/8.5)) ;
     SSD1305_GotoXY(102,0);
     SSD1305_PutsN((void*)StrBat, (void*)TabSG5, 1);
     // тест полный экран

@@ -862,7 +862,9 @@ break;
     case P2: // переключаем длину волны и переустанавливаем базовый уровень (текущий) - пока просто меняем индекс указания на длину волны калибровки
       if (IndxP2LW<(WAVE_LENGTHS_NUM -1)) IndxP2LW++;
       else IndxP2LW = 0 ;
-      memset(BuffP2,IN_BuffADC[1], ARRAY_SIZE(BuffP2)); // Резко перезапишем буффер
+      IN_BuffADC_one = (IN_BuffADC[1]>ADC_Calibr)?(IN_BuffADC[1]-ADC_Calibr):(IN_BuffADC[1]);
+      memset(BuffP2,IN_BuffADC_one, ARRAY_SIZE(BuffP2)); // Резко перезапишем буффер
+      //memset(BuffP2,IN_BuffADC[1], ARRAY_SIZE(BuffP2)); // Резко перезапишем буффер
       NeedReDraw = 1;
       break;
       case Sc: // Source place switch
@@ -1015,7 +1017,9 @@ break;
     case P2: // переключаем длину волны и переустанавливаем базовый уровень (текущий) - пока просто меняем индекс указания на длину волны калибровки
       if (IndxP2LW>0) IndxP2LW--;
       else IndxP2LW = WAVE_LENGTHS_NUM -1 ;
-      memset(BuffP2,IN_BuffADC[1], ARRAY_SIZE(BuffP2)); // Резко перезапишем буффер
+      IN_BuffADC_one = (IN_BuffADC[1]>ADC_Calibr)?(IN_BuffADC[1]-ADC_Calibr):(IN_BuffADC[1]);
+      memset(BuffP2,IN_BuffADC_one, ARRAY_SIZE(BuffP2)); // Резко перезапишем буффер
+      //memset(BuffP2,IN_BuffADC[1], ARRAY_SIZE(BuffP2)); // Резко перезапишем буффер
       NeedReDraw = 1;
       break;
       case Sc: // Source place switch

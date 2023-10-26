@@ -699,7 +699,8 @@ void CalkP2Mode (void)
         BuffP2[n] = BuffP2[n+1];
         P2SUM +=BuffP2[n];
       }
-      BuffP2[ADCSIZE-1]=IN_BuffADC[1];       //au?aneaiiia a aAi , aey aaeuiaeoae ia?aaioee
+      //BuffP2[ADCSIZE-1]=IN_BuffADC[1];       //au?aneaiiia a aAi , aey aaeuiaeoae ia?aaioee
+      BuffP2[ADCSIZE-1]=(IN_BuffADC[1]>ADC_Calibr)?(IN_BuffADC[1]-ADC_Calibr):(IN_BuffADC[1]);       //22.08.2023 - перезапишем значение по новому, так как есть калибровка АЦП
       P2SUM +=BuffP2[ADCSIZE-1];
       MediumP2 = (float)P2SUM/ADCSIZE; // среднее значение кодов АЦП
       if(MediumP2<4096.0)// посчитаем значения для индикации и памяти!

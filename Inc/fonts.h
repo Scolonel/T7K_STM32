@@ -98,7 +98,7 @@ extern FontDef_t Font_16x26;
  */
 #define MAX1 548//588 15/03/2023 сократим длину цифр и тире на 1 пиксель, итого 22 из 572
                  // 26.04.2023 изменен шрифт представления добавлены буквы A L + 
-#define MAX2 1111
+#define MAX2 1129
 #define MAX3      1512 // = tab20u 888 = tabSG3//974 = tab16p
 #define MAX4      244 //
 #define MAX5      720 // +215

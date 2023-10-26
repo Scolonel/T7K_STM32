@@ -963,7 +963,9 @@ void ParseCMD (void) // разбор данных принятых по uart1
                    if( CalibrLW[i]==params[0])
                    {
                      IndxP2LW = i;
-                     memset(BuffP2,IN_BuffADC[1], ARRAY_SIZE(BuffP2)); // Резко перезапишем буффер
+                     IN_BuffADC_one = (IN_BuffADC[1]>ADC_Calibr)?(IN_BuffADC[1]-ADC_Calibr):(IN_BuffADC[1]);
+                     memset(BuffP2,IN_BuffADC_one, ARRAY_SIZE(BuffP2)); // Резко перезапишем буффер
+                     //memset(BuffP2,IN_BuffADC[1], ARRAY_SIZE(BuffP2)); // Резко перезапишем буффер
                      sprintf((void*)AnsData,"%d\r",CalibrLW[IndxP2LW]);
                      NeedReDraw=1;
                      break; 
