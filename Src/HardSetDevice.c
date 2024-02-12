@@ -256,7 +256,7 @@ void InitDevice(unsigned Err)
   Err = Err>>1;
   if (Err & 0x01) DeviceConfig.CfgRE = 0; //                     // 7 bit
   Err = Err>>1;
-  if (Err & 0x01) DeviceConfig.CfgPM = 0;                     // 8 bit
+  if (Err & 0x01) DeviceConfig.CfgPM = 1;                     // 8 bit
   Err = Err>>1;
   if (Err & 0x01)                    // 9 bit заполняем строку наименования
   {

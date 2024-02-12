@@ -42,32 +42,41 @@ void Sec2Clock( uint32_t TimeSec) // перевод секунд в структуры Clocks
   while(TimeSec > tmp)
   {
     TimeSec = TimeSec - tmp;
-    Year++;
     if(Year%4) tmp = YearSec;
     else tmp = YearSecV;
+    Year++;
   }
   // получили год 
   Clocks.cYear = Year;
   Month = 1;
-
-  while(TimeSec>_Days[Month-1]*DaySec)
+  // текущее число секунд в текущем году
+  // считаем месяцы
+  //while(TimeSec>_Days[Month-1]*DaySec)
+  while(TimeSec>(((Month==2)&&(!(Year%4)))?(_Days[Month-1]+1):(_Days[Month-1]))*DaySec)
   {
-    TimeSec -= _Days[Month-1]*DaySec;
+    //TimeSec -= _Days[Month-1]*DaySec;
+    TimeSec -= (((Month==2)&&(!(Year%4)))?(_Days[Month-1]+1):(_Days[Month-1]))*DaySec;
     Month++;
   }
-  if((Month>1)&&(!(Year%4))) TimeSec -=DaySec;
+  
+  // если вычесть в каждый
+  //if((Month>2)&&(!(Year%4))) TimeSec -=DaySec; // если высокосный год и уже март, то вычитаем день
   // Mounth
   Clocks.cMonth = Month;
   
-  Day = 1;
+//  Day = 1;
+//  
+//  while(TimeSec>DaySec)
+//  {
+//    TimeSec -= DaySec;
+//    Day++;    
+//  }
+  Day = TimeSec/DaySec;
   
-  while(TimeSec>DaySec)
-  {
-    TimeSec -= DaySec;
-    Day++;    
-  }
   // Day 
-  Clocks.cDay = Day;
+  TimeSec -= Day*DaySec;
+  Clocks.cDay = Day+1;
+
   
   Hour = TimeSec/3600;
   Clocks.cHour = Hour;
@@ -86,11 +95,12 @@ void Sec2Clock( uint32_t TimeSec) // перевод секунд в структуры Clocks
   return;
 }
 
+#pragma optimize=no_optimization
 
 uint32_t TotalSec( void) // перевод текущего времени в секунды
 {
   uint32_t secs;
-
+  
   int Year;
   unsigned int Month;
   unsigned int Date, days;
@@ -105,30 +115,30 @@ uint32_t TotalSec( void) // перевод текущего времени в секунды
   Hour = Clocks.cHour; 
   Date = Clocks.cDay; 
   Month = Clocks.cMonth; 
- if ((Month > 12) || (Month == 0)) Month =2; 
- Year = Clocks.cYear%100 ;//+ 14; 
- 	if((!((Year) % 4))&&(Month>2)) days++; // добавляем день высокосного года
-        
-	if (Year > 43) Year = 1;
-
-	Year--;
-        
-	while(Year>=21)
-	{
-		if(!((Year)%4))days+=366;
-		else days+=365;
-		Year--;
-	}
-	while(Month-1>0)
-		days+=_Days[(--Month)-1];
-
-	days+=Date-1;
-	
-	secs=days*24*3600+Hour*3600+Minut*60+Sec;
-        //secs = secs + Y2021F15; // 15 февраля 2021 (
-        secs = secs + Y2021J01; // 01 января 2021 (
-
-    return(secs);
+  if ((Month > 12) || (Month == 0)) Month =2; 
+  Year = Clocks.cYear%100 ;//+ 14; 
+  if((!((Year) % 4))&&(Month>2)) days++; // добавляем день высокосного года
+  
+  if (Year > 43) Year = 1;
+  
+  Year--;
+  
+  while(Year>=21)
+  {
+    if(!((Year)%4))days+=366;
+    else days+=365;
+    Year--;
+  }
+  while(Month-1>0)
+    days+=_Days[(--Month)-1];
+  
+  days+=Date-1;
+  
+  secs=days*24*3600+Hour*3600+Minut*60+Sec;
+  //secs = secs + Y2021F15; // 15 февраля 2021 (
+  secs = secs + Y2021J01; // 01 января 2021 (
+  
+  return(secs);
 }
 
 // Установить системное время 
@@ -148,7 +158,7 @@ void SetSysTime (uint32_t TimeCounter, RTC_HandleTypeDef* hrtc)
 uint32_t ReSetRegRTC (int Dir, RTC_HandleTypeDef* hrtc) // Dir =0 пишем из RTC to Clocks
 {
   
-  uint32_t timecounter = 0U;
+static  uint32_t timecounter = 0U;
 #if defined(STM32F302xE) || defined(STM32F303xE) || defined(STM32F398xx) || \
     defined(STM32F302xC) || defined(STM32F303xC) || defined(STM32F358xx) || \
     defined(STM32F303x8) || defined(STM32F334x8) || defined(STM32F328xx) || \
