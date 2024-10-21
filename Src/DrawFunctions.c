@@ -770,7 +770,7 @@ void ShowVer(void)
     //  }
     sprintf((char*)Strc,"%6.2f%s",(P2Mode==dBm)?(P2dBmValue):(P2dBValue), (P2Mode==dBm)?("dBm"):("dB")) ;// надо изменить под свои данные
     sprintf((char*)Stra,"%04dнм",CalibrLW[IndxP2LW]) ;
-    sprintf((char*)Strb,"%.1f", UserMeasConfig.BaseLvlP2[IndxP2LW]) ;
+    sprintf((char*)Strb,"%.2f", UserMeasConfig.BaseLvlP2[IndxP2LW]) ;
     
     SSD1305_Fill(0); /* очистка экрана*/
     
@@ -778,7 +778,7 @@ void ShowVer(void)
     SSD1305_PutsN((void*)Strc, (void*)TabSG3, 1);// крупные буквы Значение мощности
     SSD1305_GotoXY(12,24);
     SSD1305_PutsN((void*)Stra, (void*)TabSG2, 1);// мелкие буквы длина волны
-    SSD1305_GotoXY(92,24);
+    SSD1305_GotoXY(90,24);
     SSD1305_PutsN((void*)Strb, (void*)TabSG2, 1);// мелкие буквы базовый уровень
     // индикация работающего лазера
     sprintf((char*)Strm,"%s",(lSofn)?("*"):(" ")) ; // индикация излучения лазера
