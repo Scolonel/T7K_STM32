@@ -277,6 +277,10 @@ uint16_t LnA; // Длина линии
 
 } TAB_PONAUTO;
 
+    // проверка на BUSY I2C и сразу правка
+// попытка быстро востановить I2C 
+void FixErrI2C(void);
+
 // for DrawFunction
 extern uint8_t Str[64];
 extern uint8_t Stra[32];
@@ -294,6 +298,7 @@ extern uint8_t StrBat[4]; // строка отображения режима работы на индикаторе
 // for Automat
 extern uint8_t KeyCode; //код клавиш для вызова обработчика (msp430 Inp)
 extern uint32_t CntErrI2C; // счетчик ошибок I2C  
+extern uint32_t CntErrKbrd; // счетчик ошибок I2C чтение клавиатуры! 
 
 
 extern uint8_t StPon1[3][5], StPon2[3][8], StPon3[3][8]; //строки для многострочных выводов из составляющих

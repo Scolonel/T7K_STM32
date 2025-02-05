@@ -111,41 +111,67 @@ HAL_StatusTypeDef ConfigKBRD (void)
 HAL_StatusTypeDef CtrlExpand ( uint16_t PinOut, uint16_t Mask, uint8_t ModeS) // управление пинами выходов Expanders ( 9555), only P8-P15 & P7 = P8-0x01, P9-0x02, ... P15-0x80 P7-0x100
 {
   //HAL_StatusTypeDef StatusI2C2 = HAL_ERROR;
-//  StatusI2C2 = HAL_ERROR;
+  //  StatusI2C2 = HAL_ERROR;
   uint8_t BufTX[3];
   uint8_t BufRX[3];
   volatile uint16_t InPin1 = (PinOut & 0x100)>>1; // устанавливаем бит для младшего байта управления
   volatile uint16_t InPin2 = PinOut & Mask; //   
   
+  StatusI2C2 =  TOP_I2C_IsDeviceReady(&hi2c1, (uint16_t)(KEYBOARD<<1), 1, 1000); // если эта микросхема???
+  if (StatusI2C2)
+  {
+    // попробуем на ходу поправить I2C 
+    // если вдруг получится
+      CntErrKbrd = 0x10 + StatusI2C2;
+    FixErrI2C();
     StatusI2C2 =  TOP_I2C_IsDeviceReady(&hi2c1, (uint16_t)(KEYBOARD<<1), 1, 1000); // если эта микросхема???
-  if (StatusI2C2) return StatusI2C2;
-    // сначала младший байт переустанавливаем в соответствии с PinOUT
-    // read current stats LOEW byte
+    if (StatusI2C2)
+    {
+      CntErrKbrd = 0x100 + StatusI2C2;
+      return StatusI2C2;
+    }
+  }
+  // сначала младший байт переустанавливаем в соответствии с PinOUT
+  // read current stats LOEW byte
   BufTX[0] = 0;   // пишем команду  0 - значит принимаем младший первый 
   StatusI2C2 = TOP_I2C_Master_Transmit(&hi2c1, (uint16_t)(KEYBOARD<<1), BufTX, 1, 1000);
+  if (StatusI2C2)
+  {
+    CntErrKbrd = 0x20 + StatusI2C2;
+    return StatusI2C2;
+  }
   // читаем 2 байта ( вроде как ) младший первый
   StatusI2C2 = TOP_I2C_Master_Receive(&hi2c1, (uint16_t)(KEYBOARD<<1), BufRX, 2, 1000); // считываем два байта значений установленных портов
+  if (StatusI2C2)
+  {
+    CntErrKbrd = 0x40 + StatusI2C2;
+    return StatusI2C2;
+  }
   if (ModeS) // устанавливаем 1 на выходе ()модернизируем только старший байт
   {
-  BufRX[0] |= (uint8_t)InPin1;
-  BufRX[1] &= ~(uint8_t)Mask;
-  BufRX[1] |= (uint8_t)InPin2;
+    BufRX[0] |= (uint8_t)InPin1;
+    BufRX[1] &= ~(uint8_t)Mask;
+    BufRX[1] |= (uint8_t)InPin2;
   }
   else // обнуляем соот. бит
   {
-  BufRX[0] &= ~(uint8_t)InPin1;
-  BufRX[1] &= ~(uint8_t)InPin2;
+    BufRX[0] &= ~(uint8_t)InPin1;
+    BufRX[1] &= ~(uint8_t)InPin2;
   }
   // теперь надо записать
   BufTX[0] = 2 ; // первый младший
   BufTX[1] = BufRX[0]; 
   BufTX[2] = BufRX[1]; 
   // write NEW stat in IC LOW Byte
-   StatusI2C2 = TOP_I2C_Master_Transmit(&hi2c1, (uint16_t)(KEYBOARD<<1), BufTX, 3, 1000);
-  if (StatusI2C2) return StatusI2C2;
+  StatusI2C2 = TOP_I2C_Master_Transmit(&hi2c1, (uint16_t)(KEYBOARD<<1), BufTX, 3, 1000);
+  if (StatusI2C2)
+  {
+    CntErrKbrd = 0x80 + StatusI2C2;
+    return StatusI2C2;
+  }
   
   return StatusI2C2 ;
-  }
+}
 
 
 // разбор и запись соответствующей структуры

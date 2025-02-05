@@ -110,9 +110,10 @@ int Indxi; //вспомогательный индекс для уменьшения расчетов
 void TestDraw (void)
 {
   //sprintf((char*)Stre, "%d(%d)%s",Mod_At_cnt,NeedReDraw,Strf);//тест вывод
-  sprintf((char*)Stre, "%d(%d)-%d",Mod_At_cnt,NeedReDraw,CntErrI2C);//тест вывод
+  sprintf((char*)Stre, "%d(%d)-%d(%02X)",Mod_At_cnt,NeedReDraw,CntErrI2C,CntErrKbrd);//тест вывод
 }
 uint32_t CntErrI2C; // счетчик ошибок I2C  
+uint32_t CntErrKbrd; // счетчик ошибок I2C чтение клавиатуры! 
 // поиск индекса калибровочной длины волны по ее значению
 int iClbFromLW (uint16_t LWi)
 {
@@ -393,7 +394,7 @@ void Run_At (void)
       Mod_At_cnt=0; // сброс счетчика таймера команды
       
       // memory!!!
-      NeedSaveChange = 0x10; // сохраним мощность источника своего переденного от Slave
+      //NeedSaveChange = 0x10; // сохраним мощность источника своего переденного от Slave
       //PMWavelenght = DeviceConfig.PlaceLS[Ind_LW]; // в строку вывода записываем длину волны передаваемого источника
       NeedReDraw = 10;
       TestDraw();
@@ -867,7 +868,8 @@ void Run_At (void)
         MsgStat[3] = 'o'; // 
         sprintf((char*)MsgAuto[1], "%s",MsgStat);
         NeedReDraw = 22;
-        sprintf((char*)Stre, "%d(%d)%s",Mod_At_cnt,NeedReDraw,Strf);//тест вывод
+        TestDraw();
+        //        sprintf((char*)Stre, "%d(%d)%s",Mod_At_cnt,NeedReDraw,Strf);//тест вывод
       }
       
     }
