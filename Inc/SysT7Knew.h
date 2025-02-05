@@ -293,6 +293,7 @@ extern uint8_t StrBat[4]; // строка отображения режима работы на индикаторе
 
 // for Automat
 extern uint8_t KeyCode; //код клавиш для вызова обработчика (msp430 Inp)
+extern uint32_t CntErrI2C; // счетчик ошибок I2C  
 
 
 extern uint8_t StPon1[3][5], StPon2[3][8], StPon3[3][8]; //строки для многострочных выводов из составляющих

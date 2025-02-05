@@ -106,7 +106,13 @@ uint16_t CalibLnAuto; // смещение длины после калибровки в режиме автомат!
 uint8_t StrAnsverData[32]; // строка тестовая для передачи данных о принятых ответов
 int Indxi; //вспомогательный индекс для уменьшения расчетов 
 
-
+// футкция тестового отбражение
+void TestDraw (void)
+{
+  //sprintf((char*)Stre, "%d(%d)%s",Mod_At_cnt,NeedReDraw,Strf);//тест вывод
+  sprintf((char*)Stre, "%d(%d)-%d",Mod_At_cnt,NeedReDraw,CntErrI2C);//тест вывод
+}
+uint32_t CntErrI2C; // счетчик ошибок I2C  
 // поиск индекса калибровочной длины волны по ее значению
 int iClbFromLW (uint16_t LWi)
 {
@@ -179,7 +185,8 @@ void Run_At (void)
       memcpy(MsgAuto[1],Msg[1],strlen(Msg[1])); // команд
       FirstInput=0; 
       NeedReDraw = 1;
-      sprintf((char*)Stre, "%d(%d)%s",Mod_At_cnt,NeedReDraw,Strf);//тест вывод
+      TestDraw();
+      //sprintf((char*)Stre, "%d(%d)%s",Mod_At_cnt,NeedReDraw,Strf);//тест вывод
     }
     else
     { 
@@ -200,7 +207,8 @@ void Run_At (void)
           En_TX_Cmd = 0;// время ответа мастеру
           Start_Cmd = tansCalPw; // 
           NeedReDraw = 2;
-          sprintf((char*)Stre, "%d(%d)%s",Mod_At_cnt,NeedReDraw,Strf);//тест вывод
+          TestDraw();
+          //sprintf((char*)Stre, "%d(%d)%s",Mod_At_cnt,NeedReDraw,Strf);//тест вывод
           TestCntWait=0;
           CntrlA(0); // 
           
@@ -216,7 +224,8 @@ void Run_At (void)
           Err_Cmd_At = 0; //сброс ошибок приема в режиме  At
           En_TX_Cmd = 0;
           NeedReDraw = 3;
-          sprintf((char*)Stre, "%d(%d)%s",Mod_At_cnt,NeedReDraw,Strf);//тест вывод
+          TestDraw();
+          //sprintf((char*)Stre, "%d(%d)%s",Mod_At_cnt,NeedReDraw,Strf);//тест вывод
           //SW5V(1);// ON 5V
           break;
           //-----------------
@@ -234,7 +243,8 @@ void Run_At (void)
           En_TX_Cmd = 0;// время ответа мастеру
           Start_Cmd = tansCalPw; // 
           NeedReDraw = 4;
-          sprintf((char*)Stre, "%d(%d)%s",Mod_At_cnt,NeedReDraw,Strf);//тест вывод
+          TestDraw();
+          //sprintf((char*)Stre, "%d(%d)%s",Mod_At_cnt,NeedReDraw,Strf);//тест вывод
           break;
           //-----------------
         case SWMcmd: //в режиме ожидания переключение Slave в 
@@ -247,7 +257,8 @@ void Run_At (void)
           lSofn = 0; //
           En_TX_Cmd = 0;// время ответа мастеру
           NeedReDraw = 5;
-          sprintf((char*)Stre, "%d(%d)%s",Mod_At_cnt,NeedReDraw,Strf);//тест вывод
+          TestDraw();
+          //sprintf((char*)Stre, "%d(%d)%s",Mod_At_cnt,NeedReDraw,Strf);//тест вывод
           break;
           //-------------------
         case SRLcmd: //в режиме ожидания  Slave в 
@@ -262,7 +273,8 @@ void Run_At (void)
           Cnt_SPw = 0; // счетчик рабочих мест которые надо передать
           En_TX_Cmd = 0;// время ответа мастеру
           NeedReDraw = 6;
-          sprintf((char*)Stre, "%d(%d)%s",Mod_At_cnt,NeedReDraw,Strf);//тест вывод
+          TestDraw();
+          //sprintf((char*)Stre, "%d(%d)%s",Mod_At_cnt,NeedReDraw,Strf);//тест вывод
           break;
           //-------------------
           
@@ -290,7 +302,8 @@ void Run_At (void)
       FirstInput=0; 
       tSt_Cnt=0;
       NeedReDraw = 7;
-      sprintf((char*)Stre, "%d(%d)%s",Mod_At_cnt,NeedReDraw,Strf);//тест вывод
+      TestDraw();
+      //sprintf((char*)Stre, "%d(%d)%s",Mod_At_cnt,NeedReDraw,Strf);//тест вывод
     }
     else // сам режим , цикл передачи длины волны излучения, с последующим постоянным излучением,
     {
@@ -327,7 +340,8 @@ void Run_At (void)
         lSofn = 1; //
         PMWavelenght = DeviceConfig.PlaceLS[Ind_LW]; // в строку вывода записываем длину волны передаваемого источника
         NeedReDraw = 8;
-        sprintf((char*)Stre, "%d(%d)%s",Mod_At_cnt,NeedReDraw,Strf);//тест вывод
+        TestDraw();
+        //sprintf((char*)Stre, "%d(%d)%s",Mod_At_cnt,NeedReDraw,Strf);//тест вывод
         
       }
       else 
@@ -341,7 +355,8 @@ void Run_At (void)
           sprintf((char*)MsgAuto[1], "%s",MsgStat);
           
           NeedReDraw = 9;
-          sprintf((char*)Stre, "%d(%d)%s",Mod_At_cnt,NeedReDraw,Strf);//тест вывод
+          TestDraw();
+          //sprintf((char*)Stre, "%d(%d)%s",Mod_At_cnt,NeedReDraw,Strf);//тест вывод
           
           ;
         }
@@ -365,7 +380,7 @@ void Run_At (void)
       }
       else
       {
-          CW_S(0);
+        CW_S(0);
       }
     }
     // проверим есть ли ответ от Slave , если есть то запишем результат и запусти новый цикл
@@ -381,7 +396,8 @@ void Run_At (void)
       NeedSaveChange = 0x10; // сохраним мощность источника своего переденного от Slave
       //PMWavelenght = DeviceConfig.PlaceLS[Ind_LW]; // в строку вывода записываем длину волны передаваемого источника
       NeedReDraw = 10;
-      sprintf((char*)Stre, "%d(%d)%s",Mod_At_cnt,NeedReDraw,Strf);//тест вывод
+      TestDraw();
+      //sprintf((char*)Stre, "%d(%d)%s",Mod_At_cnt,NeedReDraw,Strf);//тест вывод
       if (Cnt_SPw == NumChoiceLS) // все передали и приняли
       {
         //myBeep(200); // можно измерить длину! (откалиброваться!!!)
@@ -414,7 +430,8 @@ void Run_At (void)
       memcpy(MsgAuto[0],Msg[4],strlen(Msg[4])); // ошибка
       memcpy(MsgAuto[1],Msg[5],strlen(Msg[5])); // калибровки
       NeedReDraw = 11;
-      sprintf((char*)Stre, "%d(%d)%s",Mod_At_cnt,NeedReDraw,Strf);//тест вывод
+      TestDraw();
+      //sprintf((char*)Stre, "%d(%d)%s",Mod_At_cnt,NeedReDraw,Strf);//тест вывод
       
       //Start_Cmd = 0;
       //sprintf(Str4, "    ошибка    ");
@@ -443,7 +460,8 @@ void Run_At (void)
       PMWavelenght = DeviceConfig.PlaceLS[Ind_LW]; // в строку вывода записываем длину волны передаваемого источника
       FirstInput=0; 
       NeedReDraw = 12;
-      sprintf((char*)Stre, "%d(%d)%s",Mod_At_cnt,NeedReDraw,Strf);//тест вывод
+      TestDraw();
+      //sprintf((char*)Stre, "%d(%d)%s",Mod_At_cnt,NeedReDraw,Strf);//тест вывод
       
       
       // может тут надо включить питание для работы измерителя длины
@@ -473,7 +491,8 @@ void Run_At (void)
         En_TX_Cmd = 0;
         lSofn = 1; //
         NeedReDraw = 13;
-        sprintf((char*)Stre, "%d(%d)%s",Mod_At_cnt,NeedReDraw,Strf);//тест вывод
+        TestDraw();
+        //sprintf((char*)Stre, "%d(%d)%s",Mod_At_cnt,NeedReDraw,Strf);//тест вывод
       }
       // время запуска Зондирующего импульса, 
       if(Mod_At_cnt==tziLnRClb) // 1Сек
@@ -568,6 +587,7 @@ void Run_At (void)
           CalibLnAuto=(uint16_t)Summx;
           // надо сохранить в памяти
           UserMeasConfig.CalibLnAutoMem = CalibLnAuto;
+          // memory!!!
           NeedSaveChange |=0x01; // сохраняем пользовательские изменения (калибровку длины)
           memcpy(MsgAuto[0],Msg[6],strlen(Msg[6])); // калибровка завершена
           memcpy(MsgAuto[1],Msg[8],strlen(Msg[8]));
@@ -603,7 +623,8 @@ void Run_At (void)
         }
         
         NeedReDraw = 14;
-        sprintf((char*)Stre, "%d(%d)%s",Mod_At_cnt,NeedReDraw,Strf);//тест вывод
+        TestDraw();
+        //sprintf((char*)Stre, "%d(%d)%s",Mod_At_cnt,NeedReDraw,Strf);//тест вывод
         
       }
     }
@@ -645,7 +666,8 @@ void Run_At (void)
       //while(WaitCnt--); // ждем для ответа ~0.2С
       //SysTick->CTRL  |= SysTick_CTRL_ENABLE_Msk; // снова разрешим системный таймер
       NeedReDraw = 16; // 123
-      sprintf((char*)Stre, "%d(%d)%s",Mod_At_cnt,NeedReDraw,Strf);//тест вывод 123
+      TestDraw();
+      //sprintf((char*)Stre, "%d(%d)%s",Mod_At_cnt,NeedReDraw,Strf);//тест вывод 123
     }
     // время выхода из режима 
     if (Mod_At_cnt>teLnX) // нет больше передачи от slave выходим в View
@@ -663,7 +685,8 @@ void Run_At (void)
       lSofn = 0; //
       FirstInput=1; 
       NeedReDraw = 15;
-      sprintf((char*)Stre, "%d(%d)%s",Mod_At_cnt,NeedReDraw,Strf);//тест вывод
+      TestDraw();
+      //sprintf((char*)Stre, "%d(%d)%s",Mod_At_cnt,NeedReDraw,Strf);//тест вывод
     }
     
     break;  // Lnx
@@ -692,7 +715,7 @@ void Run_At (void)
       TxOptBusy = 1;
       //TsT(1);
       En_TX_Cmd = 0;
-        sprintf((char*)Strf,"%s",StrTXOpt) ;
+      sprintf((char*)Strf,"%s",StrTXOpt) ;
       //memcpy(MsgAuto[0],Msg[0],strlen(Msg[0])); // ожидание команд
       //memcpy(MsgAuto[1],Msg[1],strlen(Msg[1]));
       Mod_At_cnt=MaxAT;
@@ -700,7 +723,8 @@ void Run_At (void)
       lSofn = 0; //
       FirstInput=1; 
       NeedReDraw = 17;
-      sprintf((char*)Stre, "%d(%d)%s",Mod_At_cnt,NeedReDraw,Strf);//тест вывод
+      TestDraw();
+      //sprintf((char*)Stre, "%d(%d)%s",Mod_At_cnt,NeedReDraw,Strf);//тест вывод
     }
     // время измерения мощности от мастера
     if (Mod_At_cnt==tsCalPw) //фиксируем в памяти что передавать
@@ -714,7 +738,8 @@ void Run_At (void)
       //      sprintf((char*)MsgAuto[2], "%d %.2f %d",PMWavelenght, Pow_SC_Tx, TestCntWait);//
       
       NeedReDraw = 18;
-      sprintf((char*)Stre, "%d(%d)%s",Mod_At_cnt,NeedReDraw,Strf);//тест вывод
+      TestDraw();
+      //sprintf((char*)Stre, "%d(%d)%s",Mod_At_cnt,NeedReDraw,Strf);//тест вывод
       //P2OUT &=~LD_R;
     }
     break; // CalPw    
@@ -735,7 +760,8 @@ void Run_At (void)
       GetSetLW_SC (0, 1); //установим первый лазер которым светить 0-первый,1-с маской разрешенных, здесь устанавливается Ind_LW
       FirstInput = 0; 
       NeedReDraw = 19;
-      sprintf((char*)Stre, "%d(%d)%s",Mod_At_cnt,NeedReDraw,Strf);//тест вывод
+      TestDraw();
+      //sprintf((char*)Stre, "%d(%d)%s",Mod_At_cnt,NeedReDraw,Strf);//тест вывод
       // 
     }
     else
@@ -773,7 +799,8 @@ void Run_At (void)
         sprintf((char*)MsgAuto[1], "%s",MsgStat);
         //memcpy(MsgAuto[1],MsgStat,strlen(MsgStat)); 
         NeedReDraw = 20;
-        sprintf((char*)Stre, "%d(%d)%s",Mod_At_cnt,NeedReDraw,Strf);//тест вывод
+        TestDraw();
+        //sprintf((char*)Stre, "%d(%d)%s",Mod_At_cnt,NeedReDraw,Strf);//тест вывод
         
       }
       else 
@@ -798,7 +825,7 @@ void Run_At (void)
       }
       else
       {
-          CW_S(0);
+        CW_S(0);
       }
     }
     // Здесь еще надо снять ORL 
@@ -826,7 +853,8 @@ void Run_At (void)
       Mod_At_cnt=0; // сброс счетчика таймера команды
       //PMWavelenght = DeviceConfig.PlaceLS[Ind_LW]; // в строку вывода записываем длину волны передаваемого источника
       NeedReDraw = 21;
-      sprintf((char*)Stre, "%d(%d)%s",Mod_At_cnt,NeedReDraw,Strf);//тест вывод
+      TestDraw();
+      //sprintf((char*)Stre, "%d(%d)%s",Mod_At_cnt,NeedReDraw,Strf);//тест вывод
       if (Cnt_SPw == NumChoiceLS) // все передали и приняли
       {
         //myBeep(200); // можно продолжить измерения
@@ -852,7 +880,8 @@ void Run_At (void)
       memcpy(MsgAuto[1],Msg[15],strlen(Msg[15])); // нет связи
       NeedReDraw = 23;
       OpticCMD = NOTcmd; // сбросим ЭХО от собственного посыла
-      sprintf((char*)Stre, "%d(%d)%s",Mod_At_cnt,NeedReDraw,Strf);//тест вывод
+      TestDraw();
+      //sprintf((char*)Stre, "%d(%d)%s",Mod_At_cnt,NeedReDraw,Strf);//тест вывод
       
       //Start_Cmd = 0;
       //sprintf(Str4, "    ошибка    ");
@@ -879,7 +908,7 @@ void Run_At (void)
       HAL_UART_Transmit_DMA(&huart2, (void*)StrTXOpt,strlen((void*)StrTXOpt)); // выдаем 
       TxOptBusy = 1;
       //TsT(1);
-        sprintf((char*)Strf,"%s",StrTXOpt) ;
+      sprintf((char*)Strf,"%s",StrTXOpt) ;
       Mod_At_cnt++; // +50мС
       En_TX_Cmd = 0;
       lSofn = 1; //
@@ -887,7 +916,8 @@ void Run_At (void)
       sprintf((char*)MsgAuto[1], "%s",MsgStat);
       //memcpy(MsgAuto[1],MsgStat,strlen(MsgStat)); 
       NeedReDraw = 24;
-      sprintf((char*)Stre, "%d(%d)%s",Mod_At_cnt,NeedReDraw,Strf);//тест вывод
+      TestDraw();
+      //sprintf((char*)Stre, "%d(%d)%s",Mod_At_cnt,NeedReDraw,Strf);//тест вывод
     }
     if(Mod_At_cnt==tsoCmdSw) // 5
       // закончили передачу (выключим значек передачи)
@@ -906,7 +936,8 @@ void Run_At (void)
       sprintf((char*)MsgAuto[1], "%s",MsgStat);
       Mod_At_cnt = 0;
       NeedReDraw = 25;
-      sprintf((char*)Stre, "%d(%d)%s",Mod_At_cnt,NeedReDraw,Strf);//тест вывод
+      TestDraw();
+      //sprintf((char*)Stre, "%d(%d)%s",Mod_At_cnt,NeedReDraw,Strf);//тест вывод
     }
     // предельное время ожидания ответов
     if (Mod_At_cnt>teCmdSw) // нет ответа 20 tick
@@ -916,7 +947,8 @@ void Run_At (void)
       memcpy(MsgAuto[0],Msg[4],strlen(Msg[4])); // ошибка
       memcpy(MsgAuto[1],Msg[15],strlen(Msg[15])); // нет связи
       NeedReDraw = 26;
-      sprintf((char*)Stre, "%d(%d)%s",Mod_At_cnt,NeedReDraw,Strf);//тест вывод
+      TestDraw();
+      //sprintf((char*)Stre, "%d(%d)%s",Mod_At_cnt,NeedReDraw,Strf);//тест вывод
     }
     
     break; // CmdSw
@@ -939,7 +971,8 @@ void Run_At (void)
       Mod_At_cnt = 0;
       NeedReDraw = 27;
       OpticCMD = NOTcmd;
-      sprintf((char*)Stre, "%d(%d)%s",Mod_At_cnt,NeedReDraw,Strf);//тест вывод
+      TestDraw();
+      //sprintf((char*)Stre, "%d(%d)%s",Mod_At_cnt,NeedReDraw,Strf);//тест вывод
       
     }
     if((Mod_At_cnt==40) && NeedReadPWSlave)// рассчитаем и запишем затухание BA
@@ -963,7 +996,8 @@ void Run_At (void)
       sprintf((char*)MsgAuto[1], "%s",MsgStat);
       Mod_At_cnt = 0;
       NeedReDraw = 28;
-      sprintf((char*)Stre, "%d(%d)%s",Mod_At_cnt,NeedReDraw,Strf);//тест вывод
+      TestDraw();
+      //sprintf((char*)Stre, "%d(%d)%s",Mod_At_cnt,NeedReDraw,Strf);//тест вывод
       
     }
     break; // Sl_Px
@@ -987,7 +1021,7 @@ void Run_At (void)
       HAL_UART_Transmit_DMA(&huart2, (void*)StrTXOpt,strlen((void*)StrTXOpt)); // выдаем 
       TxOptBusy = 1;
       //TsT(1);
-        sprintf((char*)Strf,"%s",StrTXOpt) ;
+      sprintf((char*)Strf,"%s",StrTXOpt) ;
       Mod_At_cnt++; // +50мС
       Start_Cmd = MaxAT+2; // чтобы больше ничего не передавать
       Cnt_BA=0;
@@ -998,7 +1032,8 @@ void Run_At (void)
       sprintf((char*)MsgAuto[1], "%s",MsgStat);
       //memcpy(MsgAuto[1],MsgStat,strlen(MsgStat)); 
       NeedReDraw = 29;
-      sprintf((char*)Stre, "%d(%d)%s",Mod_At_cnt,NeedReDraw,Strf);//тест вывод
+      TestDraw();
+      //sprintf((char*)Stre, "%d(%d)%s",Mod_At_cnt,NeedReDraw,Strf);//тест вывод
     }
     // ждем данных ответы от Slave (и пишем в память)
     if(OpticCMD == SLOcmd)
@@ -1013,7 +1048,8 @@ void Run_At (void)
       NeedReDraw = 30;
       OpticCMD = NOTcmd;
       Cnt_BA++;
-      sprintf((char*)Stre, "%d(%d)%s",Mod_At_cnt,NeedReDraw,Strf);//тест вывод
+      TestDraw();
+      //sprintf((char*)Stre, "%d(%d)%s",Mod_At_cnt,NeedReDraw,Strf);//тест вывод
     }
     if(Mod_At_cnt>100) // долго ничего нет , выходим в режим  и продолжаем измерения
       // надо запустить измерение длины
@@ -1038,7 +1074,8 @@ void Run_At (void)
       MsgStat[14] = 'o'; // 
       sprintf((char*)MsgAuto[1], "%s",MsgStat);
       NeedReDraw = 31;
-      sprintf((char*)Stre, "%d(%d)%s",Mod_At_cnt,NeedReDraw,Strf);//тест вывод
+      TestDraw();
+      //sprintf((char*)Stre, "%d(%d)%s",Mod_At_cnt,NeedReDraw,Strf);//тест вывод
     }
     
     break; // AskOrl
@@ -1064,12 +1101,13 @@ void Run_At (void)
       HAL_UART_Transmit_DMA(&huart2, (void*)StrTXOpt,strlen((void*)StrTXOpt)); // выдаем 
       TxOptBusy = 1;
       //TsT(1);
-        sprintf((char*)Strf,"%s",StrTXOpt) ;
+      sprintf((char*)Strf,"%s",StrTXOpt) ;
       Mod_At_cnt++; // +50мС
       En_TX_Cmd = 0;
       lSofn = 1; //
       NeedReDraw = 32;
-      sprintf((char*)Stre, "%d(%d)%s",Mod_At_cnt,NeedReDraw,Strf);//тест вывод
+      TestDraw();
+      //sprintf((char*)Stre, "%d(%d)%s",Mod_At_cnt,NeedReDraw,Strf);//тест вывод
     }
     // проверим все ли передали, если да то снова в ожидание
     if(Mod_At_cnt==tnAnsOrl)
@@ -1090,7 +1128,8 @@ void Run_At (void)
         lSofn = 0; //
       }
       NeedReDraw = 33;
-      sprintf((char*)Stre, "%d(%d)%s",Mod_At_cnt,NeedReDraw,Strf);//тест вывод
+      TestDraw();
+      //sprintf((char*)Stre, "%d(%d)%s",Mod_At_cnt,NeedReDraw,Strf);//тест вывод
       
     }
     
@@ -1116,12 +1155,13 @@ void Run_At (void)
       HAL_UART_Transmit_DMA(&huart2, (void*)StrTXOpt,strlen((void*)StrTXOpt)); // выдаем 
       TxOptBusy = 1;
       //TsT(1);
-        sprintf((char*)Strf,"%s",StrTXOpt) ;
+      sprintf((char*)Strf,"%s",StrTXOpt) ;
       Mod_At_cnt++; // +50мС
       En_TX_Cmd = 0;
       lSofn = 1; //
       NeedReDraw = 34;
-      sprintf((char*)Stre, "%d(%d)%s",Mod_At_cnt,NeedReDraw,Strf);//тест вывод
+      TestDraw();
+      //sprintf((char*)Stre, "%d(%d)%s",Mod_At_cnt,NeedReDraw,Strf);//тест вывод
     }
     if (Mod_At_cnt>6) // ответ ОК = переключаемся в излучение мощности
     {
@@ -1131,7 +1171,8 @@ void Run_At (void)
       Mod_At_cnt = 0;
       FirstInput = 1;
       NeedReDraw = 35;
-      sprintf((char*)Stre, "%d(%d)%s",Mod_At_cnt,NeedReDraw,Strf);//тест вывод
+      TestDraw();
+      //sprintf((char*)Stre, "%d(%d)%s",Mod_At_cnt,NeedReDraw,Strf);//тест вывод
     }
     break; // AnsOK
     //_____________________->>> измерение ORL SLAVE
@@ -1149,7 +1190,8 @@ void Run_At (void)
       GetSetLW_SC (0, 1); //установим первый лазер которым светить 0-первый,1-с маской разрешенных, здесь устанавливается Ind_LW
       FirstInput = 0; 
       NeedReDraw = 36;
-      sprintf((char*)Stre, "%d(%d)%s",Mod_At_cnt,NeedReDraw,Strf);//тест вывод
+      TestDraw();
+      //sprintf((char*)Stre, "%d(%d)%s",Mod_At_cnt,NeedReDraw,Strf);//тест вывод
       // 
     }
     else
@@ -1181,7 +1223,8 @@ void Run_At (void)
         IndxP2LW = GetIndxLW(PMWavelenght);
         Indxi = IndxP2LW; // // установим индекс выбранного источника для измерения
         NeedReDraw = 37;
-        sprintf((char*)Stre, "%d(%d)%s",Mod_At_cnt,NeedReDraw,Strf);//тест вывод
+        TestDraw();
+        //sprintf((char*)Stre, "%d(%d)%s",Mod_At_cnt,NeedReDraw,Strf);//тест вывод
       }
       else 
       {
@@ -1203,11 +1246,11 @@ void Run_At (void)
           //NeedReDraw = 1;
         }
       }
-            else
+      else
       {
-          CW_S(0);
+        CW_S(0);
       }
-
+      
     }
     // Здесь еще надо снять ORL 
     if(Mod_At_cnt==tseSavPw+35)
@@ -1233,7 +1276,8 @@ void Run_At (void)
         lSofn = 0; //
       }
       NeedReDraw = 38;
-      sprintf((char*)Stre, "%d(%d)%s",Mod_At_cnt,NeedReDraw,Strf);//тест вывод
+      TestDraw();
+      //sprintf((char*)Stre, "%d(%d)%s",Mod_At_cnt,NeedReDraw,Strf);//тест вывод
       
     }
     break; // Sl_Orl
