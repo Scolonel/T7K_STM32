@@ -110,10 +110,11 @@ int Indxi; //вспомогательный индекс дл€ уменьшени€ расчетов
 void TestDraw (void)
 {
   //sprintf((char*)Stre, "%d(%d)%s",Mod_At_cnt,NeedReDraw,Strf);//тест вывод
-  sprintf((char*)Stre, "%d(%d)-%d(%02X)",Mod_At_cnt,NeedReDraw,CntErrI2C,CntErrKbrd);//тест вывод
+  //sprintf((char*)Stre, "%d(%d)-%d(%02X):%d",Mod_At_cnt,NeedReDraw,CntErrI2C,CntErrKbrd,CntErrAuto);//тест вывод
 }
 uint32_t CntErrI2C; // счетчик ошибок I2C  
 uint32_t CntErrKbrd; // счетчик ошибок I2C чтение клавиатуры! 
+uint32_t CntErrAuto; // счетчик ошибок авто режима! 
 // поиск индекса калибровочной длины волны по ее значению
 int iClbFromLW (uint16_t LWi)
 {
@@ -881,6 +882,7 @@ void Run_At (void)
       memcpy(MsgAuto[0],Msg[4],strlen(Msg[4])); // ошибка
       memcpy(MsgAuto[1],Msg[15],strlen(Msg[15])); // нет св€зи
       NeedReDraw = 23;
+      CntErrAuto++;
       OpticCMD = NOTcmd; // сбросим Ё’ќ от собственного посыла
       TestDraw();
       //sprintf((char*)Stre, "%d(%d)%s",Mod_At_cnt,NeedReDraw,Strf);//тест вывод

@@ -976,8 +976,8 @@ void ShowVer(void)
       SSD1305_GotoXY(87,24);
       SSD1305_PutsN((void*)Strc, (void*)TabSG2, 1);//  мелкие буквы номер записи
 
-      SSD1305_GotoXY(0,16);
-      SSD1305_PutsN((void*)Stre, (void*)TabSG2, 1);//  мелкие буквы тест сообщение
+      //SSD1305_GotoXY(0,16);
+      //SSD1305_PutsN((void*)Stre, (void*)TabSG2, 1);//  мелкие буквы тест сообщение
       
       // индикация работающего лазера
       sprintf((char*)Strm,"%s",(lSofn)?("*"):(" ")) ; // индикация излучения лазера

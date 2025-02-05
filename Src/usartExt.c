@@ -1021,7 +1021,9 @@ void ParseCMD (void) // разбор данных принятых по uart1
                   KeyCode = 0x02; //
                   break;
                 }
-                sprintf((void*)AnsData,"%d\r",NumMyBeep);
+                sprintf(((void*)AnsData, "%d(%d)-%d(%02X):%d\r",Mod_At_cnt,NeedReDraw,CntErrI2C,CntErrKbrd,CntErrAuto);//тест вывод
+
+                //sprintf((void*)AnsData,"%d\r",NumMyBeep);
                 EnaSendAns = 0;
 
                 break;
