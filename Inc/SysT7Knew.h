@@ -30,10 +30,11 @@
 //#define RELEASETIME 1692698400 // начальное время установки релиза 22.08.2023 10:00:00    версия - 50// скачек версий из-за многих итераций изменений
 //#define RELEASETIME 1707732000 // начальное время установки релиза 12.02.2024 10:00:00    версия - 52// 
 //#define RELEASETIME 1709287200 // начальное время установки релиза 01.03.2024 10:00:00    версия - 53// 
-#define RELEASETIME 1729504800 // начальное время установки релиза 21.10.2024 10:00:00    версия - 54// 
-#define RELEASEYEAR 24
-#define RELEASEMONTH 10
-#define RELEASEDATE 21
+//#define RELEASETIME 1729504800 // начальное время установки релиза 21.10.2024 10:00:00    версия - 54// 
+#define RELEASETIME 1738220400 // начальное время установки релиза 30.01.2025 10:00:00    версия - 57// 
+#define RELEASEYEAR 25
+#define RELEASEMONTH 01
+#define RELEASEDATE 30
 // время информации до автовыключения...   
 #define LASTTIMEOFF 30   
    
@@ -282,6 +283,9 @@ extern uint8_t Stra[32];
 extern uint8_t Strb[32];
 extern uint8_t Strc[32]; // 
 extern uint8_t Strd[32];
+extern uint8_t Stre[32];
+extern uint8_t Strf[32];
+
 extern uint8_t Strm[32]; // 
 extern uint8_t Str2[32]; // разрядность индикации в режиме  
 extern uint8_t StrDrM[4]; // строка отображения режима работы на индикаторе
@@ -366,6 +370,9 @@ extern uint16_t Dummy;
 extern HAL_StatusTypeDef StatusI2C2;
 // счетчик авто выключения
 extern int CntPwrOffCount; // счетчик времени автовыключения
+// test var
+extern volatile uint16_t NumMyBeep;
+
 
 
    

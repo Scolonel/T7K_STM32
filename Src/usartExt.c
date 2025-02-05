@@ -224,7 +224,8 @@ void ParseCMD (void) // разбор данных принятых по uart1
         // сброс прибора, выключение () 
         if (!memcmp ((void*)&RxBufExt[1], "RST",3))
         {  
-          myBeep(1000);
+          myBeep(1010);
+          NumMyBeep = 16;
           //Off Device
           HAL_GPIO_WritePin(POWER_ON_GPIO_Port, POWER_ON_Pin, GPIO_PIN_RESET);
           
@@ -688,9 +689,9 @@ void ParseCMD (void) // разбор данных принятых по uart1
                     fparams[0] = atof((char*)&RxBufExt[11]); // get param for setting
                     if (!(isnan(fparams[0])||(fparams[0]<=0.1)||(fparams[0]>8000.0)))// коэффициенты стыковки диапазонов
                     {
-                    CoeffPM.CoefSpctrM[params[0]]= fparams[0];
-                    EnaSendOK = 1;
-                    NeedSave |= 0x02;   
+                      CoeffPM.CoefSpctrM[params[0]]= fparams[0];
+                      EnaSendOK = 1;
+                      NeedSave |= 0x02;   
                     }
                   }
                 }
@@ -722,9 +723,9 @@ void ParseCMD (void) // разбор данных принятых по uart1
                     fparams[0] = atof((char*)&RxBufExt[12]); // get param for setting
                     if (!(isnan(fparams[0])||(fparams[0]<=0.1)||(fparams[0]>8000.0)))// коэффициенты стыковки диапазонов
                     {
-                    CoeffPM.CoefSpctrH[params[0]]= fparams[0];
-                    EnaSendOK = 1;
-                    NeedSave |= 0x02;  
+                      CoeffPM.CoefSpctrH[params[0]]= fparams[0];
+                      EnaSendOK = 1;
+                      NeedSave |= 0x02;  
                     }
                   }
                 }
@@ -827,7 +828,7 @@ void ParseCMD (void) // разбор данных принятых по uart1
                 if((params[0]>=0)&&(params[0]<3))
                 {
                   fparams[0] = atof((char*)&RxBufExt[10]); // get param for setting
-                    if (!(isnan(fparams[0])||(fparams[0]<=0.1)||(fparams[0]>10.0))) // подстроечные коэфф по основным диапазонам .0 до +12.0 (Д.Б. будет возражать про)
+                  if (!(isnan(fparams[0])||(fparams[0]<=0.1)||(fparams[0]>10.0))) // подстроечные коэфф по основным диапазонам .0 до +12.0 (Д.Б. будет возражать про)
                   {            
                     CoeffPM.CoefTune[params[0]]= fparams[0];
                     EnaSendOK = 1;
@@ -844,10 +845,10 @@ void ParseCMD (void) // разбор данных принятых по uart1
                          CoeffPM.BaseRet[0],
                          CoeffPM.BaseRet[1],
                          CoeffPM.BaseRet[2]//,
-                         //CoeffPM.BaseRet[3],
-                         //CoeffPM.BaseRet[4],
-                         //CoeffPM.BaseRet[5],
-                         //CoeffPM.BaseRet[6]
+                           //CoeffPM.BaseRet[3],
+                           //CoeffPM.BaseRet[4],
+                           //CoeffPM.BaseRet[5],
+                           //CoeffPM.BaseRet[6]
                            );//
               }
               else
@@ -885,7 +886,7 @@ void ParseCMD (void) // разбор данных принятых по uart1
                   CoeffPM.Pow_mW_Clbr= fparams[0];
                   // перепишем в рабочую
                   PowClbr_mW = CoeffPM.Pow_mW_Clbr;
-
+                  
                   EnaSendOK = 1;
                   NeedSave |= 0x02;   
                 }
@@ -935,72 +936,96 @@ void ParseCMD (void) // разбор данных принятых по uart1
           {
             if (!memcmp ((void*)&RxBufExt[5], "SCR",3)) // запрос картинки индикатора
             {
-                BinBlock = 579; // размер блока
-
+              BinBlock = 579; // размер блока
+              
             }
             if (!memcmp ((void*)&RxBufExt[5], "IND",3)) // запрос блока сохранения без сохранения текущий
             {
-                WriteBlockMEM (1); // запись блока данных в память, отделной функцией для UART EXT
-                memcpy(AnsData, "#265", 4 );
-                memcpy( &AnsData[4], &MemoryData, 64 ); // 
-                memcpy( &AnsData[68], "\r", 1 );
-                BinBlock = 69; // размер блока
-
+              WriteBlockMEM (1); // запись блока данных в память, отделной функцией для UART EXT
+              memcpy(AnsData, "#265", 4 );
+              memcpy( &AnsData[4], &MemoryData, 64 ); // 
+              memcpy( &AnsData[68], "\r", 1 );
+              BinBlock = 69; // размер блока
+              
             }
-                        if (!memcmp ((void*)&RxBufExt[5], "LW ",3)) // запрос режима или его установка
+            if (!memcmp ((void*)&RxBufExt[5], "LW ",3)) // запрос режима или его установка
             {
-                params[0] = atoi((char*)&RxBufExt[8]); // get param for setting
-                switch(CondWork)
-                {
-                case P1:
-                 CurrSpectrKoeff = GetCoeffSpctr((int)(((int)((params[0]+2.5)/5))*5),0);
+              params[0] = atoi((char*)&RxBufExt[8]); // get param for setting
+              switch(CondWork)
+              {
+              case P1:
+                CurrSpectrKoeff = GetCoeffSpctr((int)(((int)((params[0]+2.5)/5))*5),0);
                 sprintf((void*)AnsData,"%d\r",PMWavelenght);
-                  
-                  break;
-                case P2:
-                  for(int i=0;i<WAVE_LENGTHS_NUM -1;i++)
+                
+                break;
+              case P2:
+                for(int i=0;i<WAVE_LENGTHS_NUM -1;i++)
+                {
+                  if( CalibrLW[i]==params[0])
                   {
-                   if( CalibrLW[i]==params[0])
-                   {
-                     IndxP2LW = i;
-                     IN_BuffADC_one = (IN_BuffADC[1]>ADC_Calibr)?(IN_BuffADC[1]-ADC_Calibr):(IN_BuffADC[1]);
-                     memset(BuffP2,IN_BuffADC_one, ARRAY_SIZE(BuffP2)); // Резко перезапишем буффер
-                     //memset(BuffP2,IN_BuffADC[1], ARRAY_SIZE(BuffP2)); // Резко перезапишем буффер
-                     sprintf((void*)AnsData,"%d\r",CalibrLW[IndxP2LW]);
-                     NeedReDraw=1;
-                     break; 
-                   }
+                    IndxP2LW = i;
+                    IN_BuffADC_one = (IN_BuffADC[1]>ADC_Calibr)?(IN_BuffADC[1]-ADC_Calibr):(IN_BuffADC[1]);
+                    memset(BuffP2,IN_BuffADC_one, ARRAY_SIZE(BuffP2)); // Резко перезапишем буффер
+                    //memset(BuffP2,IN_BuffADC[1], ARRAY_SIZE(BuffP2)); // Резко перезапишем буффер
+                    sprintf((void*)AnsData,"%d\r",CalibrLW[IndxP2LW]);
+                    NeedReDraw=1;
+                    break; 
                   }
-                  break;
-                case Sc:
-                  for(int i=0;i<3;i++)
+                }
+                break;
+              case Sc:
+                for(int i=0;i<3;i++)
+                {
+                  if( DeviceConfig.PlaceLS[i]==params[0])
                   {
-                   if( DeviceConfig.PlaceLS[i]==params[0])
-                   {
-                     Ind_LW = i;
-                     SWITCH_LW(); // аппаратную выборку подтвердим.
-                     sprintf((void*)AnsData,"%d\r",DeviceConfig.PlaceLS[i]);
-                     NeedReDraw=1;
-                     break; 
-                   }
+                    Ind_LW = i;
+                    SWITCH_LW(); // аппаратную выборку подтвердим.
+                    sprintf((void*)AnsData,"%d\r",DeviceConfig.PlaceLS[i]);
+                    NeedReDraw=1;
+                    break; 
                   }
-                  break;
-                case Rl:
-                  for(int i=0;i<3;i++)
+                }
+                break;
+              case Rl:
+                for(int i=0;i<3;i++)
+                {
+                  if( DeviceConfig.PlaceLS[i]==params[0])
                   {
-                   if( DeviceConfig.PlaceLS[i]==params[0])
-                   {
-                     Ind_LW = i;
-                     SWITCH_LW(); // аппаратную выборку подтвердим.
-                     sprintf((void*)AnsData,"%d\r",DeviceConfig.PlaceLS[i]);
-                     IndxP2LW = GetIndxLW(DeviceConfig.PlaceLS[Ind_LW]); // получим индекс настроенного P2, для правильной работы ORL
-                     indx_LW_ORL = Ind_LW ; // установим индекс выбранного источника для измерения
-                     NeedReDraw=1;
-                     break; 
-                   }
+                    Ind_LW = i;
+                    SWITCH_LW(); // аппаратную выборку подтвердим.
+                    sprintf((void*)AnsData,"%d\r",DeviceConfig.PlaceLS[i]);
+                    IndxP2LW = GetIndxLW(DeviceConfig.PlaceLS[Ind_LW]); // получим индекс настроенного P2, для правильной работы ORL
+                    indx_LW_ORL = Ind_LW ; // установим индекс выбранного источника для измерения
+                    NeedReDraw=1;
+                    break; 
                   }
+                }
+                break;
+              }
+            }
+            if (!memcmp ((void*)&RxBufExt[5], "KEY",3)) // запрос режима или его установка
+            {
+              switch(RxBufExt[8])
+              {
+              case ' ': // проверим есть установка режима и разрешен ли он
+                params[0] = atoi((char*)&RxBufExt[9]); // get param for setting
+                switch(params[0])
+                {
+                case 1:
+                  KeyCode = 0x04; //
+                  break;
+                case 2:
+                  KeyCode = 0x7B; //
+                  break;
+                case 3:
+                  KeyCode = 0x02; //
                   break;
                 }
+                sprintf((void*)AnsData,"%d\r",NumMyBeep);
+                EnaSendAns = 0;
+
+                break;
+              }
             }
             if (!memcmp ((void*)&RxBufExt[5], "MOD",3)) // запрос режима или его установка
             {
@@ -1217,23 +1242,24 @@ void ParseCMD (void) // разбор данных принятых по uart1
     
     if (NeedSave) // признак необходимости перезаписи блоков памяти
     {
-      myBeep(20);
+      myBeep(28);
+      NumMyBeep = 17;
       WriteNeedStruct (NeedSave);
       NeedSave = 0;
       // что то поменяли перестроим коэффициенты
       CurrSpectrKoeff = GetCoeffSpctr(PMWavelenght,0);//приведенное значение мощности в миливатах, для данной длины волны
-
+      
     }
     
     if(BinBlock)
     {
       if(BinBlock<500)
         
-      // 
-      HAL_UART_Transmit_DMA(&huart1, (void*)AnsData,BinBlock); // выдаем 
+        // 
+        HAL_UART_Transmit_DMA(&huart1, (void*)AnsData,BinBlock); // выдаем 
       else
-      HAL_UART_Transmit_DMA(&huart1, (void*)SSD1305_Buffer_BMP,BinBlock); // выдаем 
-        
+        HAL_UART_Transmit_DMA(&huart1, (void*)SSD1305_Buffer_BMP,BinBlock); // выдаем 
+      
     }
     else 
       // команды 
@@ -1260,6 +1286,8 @@ void ParseOptic (void) // разбор данных принятых по uart2 (OPTIC)
   iParamOpt = 0;
     if(DataRdyUart2 && CntRXOpt)
   {
+    
+  sprintf((char*)Strf,"%s",RxBufOpt) ;
     //myBeep(100);// что то приняли попробуем разобрать
     OpticCMD = NOTcmd; // нет команд
     for (int i=0; i <CntRXOpt; i++)//цикл преобразования регистра

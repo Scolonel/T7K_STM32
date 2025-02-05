@@ -55,7 +55,7 @@ static SSD1305_t SSD1305;
 
 uint8_t SSD1305_I2C_ADDR ;
 
-uint8_t SSD1305_Init(void) {
+uint8_t SSD1305_Init(int Mode) {
 
 	/* Init I2C */
 	//ssd1305_I2C_Init();
@@ -283,7 +283,8 @@ uint8_t SSD1305_Init(void) {
 //    SSD1305_WRITECOMMAND( 0xA4);              //--turn on all pixels - A5. Regular mode A4
 //    SSD1305_WRITECOMMAND( 0xAF);            
         
-	/* Clear screen */
+	/* Clear screen  если надо, */
+        if(Mode) 
 	SSD1305_Fill(SSD1305_COLOR_BLACK);
 	
 	/* Update screen */
@@ -314,7 +315,7 @@ void SSD1305_UpdateScreen(void) {
                 //HAL_Delay(3);
 	}
 // вставим перезапись в блок BMP
-        SSD1305_GetBMP();
+       // SSD1305_GetBMP(); // возможно вообще не нужно
 }
 
 

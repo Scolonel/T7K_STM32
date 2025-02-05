@@ -35,6 +35,8 @@ uint8_t Stra[32];
 uint8_t Strb[32];
 uint8_t Strc[32]; // 
 uint8_t Strd[32];
+uint8_t Stre[32];
+uint8_t Strf[32];
 uint8_t Strm[32]; // 
 uint8_t Stri[8];
 uint8_t Str2[32]; // разрядность индикации в режиме  
@@ -509,8 +511,8 @@ void ShowVer(void)
     SSD1305_GotoXY(12,0);
     SSD1305_PutsN((void*)Str2, (void*)TabSG3, 1);
     // вывод  уровня опоры (REF)
-    sprintf((char*)Strb,"%.1f", CurrBaseLevel) ;
-    SSD1305_GotoXY(92,24);
+    sprintf((char*)Strb,"%.2f", CurrBaseLevel) ;
+    SSD1305_GotoXY(85,24);
     SSD1305_PutsN((void*)Strb, (void*)TabSG2, 1);
     // вывод текущей длины волны
     sprintf((char*)Strc,"%dнм", LW_I) ;
@@ -778,7 +780,7 @@ void ShowVer(void)
     SSD1305_PutsN((void*)Strc, (void*)TabSG3, 1);// крупные буквы Значение мощности
     SSD1305_GotoXY(12,24);
     SSD1305_PutsN((void*)Stra, (void*)TabSG2, 1);// мелкие буквы длина волны
-    SSD1305_GotoXY(90,24);
+    SSD1305_GotoXY(85,24);
     SSD1305_PutsN((void*)Strb, (void*)TabSG2, 1);// мелкие буквы базовый уровень
     // индикация работающего лазера
     sprintf((char*)Strm,"%s",(lSofn)?("*"):(" ")) ; // индикация излучения лазера
@@ -954,25 +956,28 @@ void ShowVer(void)
       // выводим в зависимости от режимов (практически все режимы)
       // 
       // переменные: Режим индикации авто измерения
-      sprintf((char*)Stra,"%s",MsgAuto[0]) ; // 1 строчка сообщения
-      sprintf((char*)Strb,"%s",MsgAuto[1]) ; // 2 строчка сообщения
       //sprintf((char*)Strd,"%s",MsgAuto[2]) ; // 3 строчка сообщения // тест, надо убрать
-      sprintf((char*)Strd,"%04dнм",LW_I) ; // строка длина волны, режима автомат
-      sprintf((char*)Strc,"№%03d",SettingPrm.CountMemory) ; // строка номера записи
       
       
       SSD1305_Fill(0); /* очистка экрана*/
       
+      sprintf((char*)Stra,"%s",MsgAuto[0]) ; // 1 строчка сообщения
       SSD1305_GotoXY(12,0);
       SSD1305_PutsN((void*)Stra, (void*)TabSG2, 1);// мелкие буквы верхняя строка
+      sprintf((char*)Strb,"%s",MsgAuto[1]) ; // 2 строчка сообщения
       SSD1305_GotoXY(12,8);
       SSD1305_PutsN((void*)Strb, (void*)TabSG2, 1);// мелкие буквы вторая строка
       //SSD1305_GotoXY(12,16);
       //SSD1305_PutsN((void*)Strd, (void*)TabSG2, 1);// мелкие буквы вторая строка
+      sprintf((char*)Strd,"%04dнм",LW_I) ; // строка длина волны, режима автомат
       SSD1305_GotoXY(12,24);
       SSD1305_PutsN((void*)Strd, (void*)TabSG2, 1);//  мелкие буквы длина волны 
+      sprintf((char*)Strc,"№%03d",SettingPrm.CountMemory) ; // строка номера записи
       SSD1305_GotoXY(87,24);
       SSD1305_PutsN((void*)Strc, (void*)TabSG2, 1);//  мелкие буквы номер записи
+
+      SSD1305_GotoXY(0,16);
+      SSD1305_PutsN((void*)Stre, (void*)TabSG2, 1);//  мелкие буквы тест сообщение
       
       // индикация работающего лазера
       sprintf((char*)Strm,"%s",(lSofn)?("*"):(" ")) ; // индикация излучения лазера

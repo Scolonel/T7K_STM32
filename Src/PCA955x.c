@@ -55,12 +55,12 @@ uint32_t GetExpand (void) // получение состо€ни€ пинов Expanders (9554 b 9555), 
   uint8_t BufRX[4];
   //GPIOE->BSRRH = GPIO_PIN_3; // (PE3) reset pin
 
-  StatusI2C2 =  TOP_I2C_IsDeviceReady(&hi2c1, (uint16_t)(KEYBOARD<<1) , 1, 10000); // если эта микросхема???
+  StatusI2C2 =  TOP_I2C_IsDeviceReady(&hi2c1, (uint16_t)(KEYBOARD<<1) , 1, 300); // если эта микросхема???
   if (StatusI2C2) return StatusI2C2<<26;
     // read current stats
   BufTX[0] = 1;
-  StatusI2C2 = TOP_I2C_Master_Transmit(&hi2c1, (uint16_t)(KEYBOARD<<1), BufTX, 1, 10000);
-  StatusI2C2 = TOP_I2C_Master_Receive(&hi2c1, (uint16_t)(KEYBOARD<<1), BufRX, 2, 10000);
+  StatusI2C2 = TOP_I2C_Master_Transmit(&hi2c1, (uint16_t)(KEYBOARD<<1), BufTX, 1, 300);
+  StatusI2C2 = TOP_I2C_Master_Receive(&hi2c1, (uint16_t)(KEYBOARD<<1), BufRX, 2, 300);
 // пишем байт в слово
   Result = (uint32_t)(BufRX[0]); // старший
   Result = Result<<8;

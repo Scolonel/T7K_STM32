@@ -29,7 +29,6 @@ uint8_t yesLV;
 int i,j;
 void KeyBoardAnsver( uint8_t CodeKeys)
 {
-  
   switch (CodeKeys)
   {
            //_____________________________________________________________________________________________ 
@@ -40,9 +39,11 @@ void KeyBoardAnsver( uint8_t CodeKeys)
     else
       UserMeasConfig.AutoOff=1;
                     NeedSaveChange |=0x10; // сохраняем пользовательские изменения (Номер волокна и признак авто инкремента)
-    myBeep(50);
+    myBeep(65);
+  NumMyBeep = 9;
     HAL_Delay(200);
-    myBeep(50);
+    myBeep(70);
+  NumMyBeep = 10;
       
 break;
        //_____________________________________________________________________________________________ 
@@ -76,16 +77,20 @@ break;
             //SettingPrm.PowSc[0]
             break;
           }
-    myBeep(500);
+    myBeep(505);
+  NumMyBeep = 11;
     HAL_Delay(800);
-    myBeep(500);
+    myBeep(510);
+  NumMyBeep = 12;
     break;
 
    //_____________________________________________________________________________________________ 
   case 0x72: // комбинация клавиш 0x02-0x20-0x40-0x10 (был вызов Setting в разных режимах)
-    myBeep(500);
+    myBeep(515);
+  NumMyBeep = 13;
     HAL_Delay(800);
-    myBeep(500);
+    myBeep(520);
+  NumMyBeep = 14;
     break;
     //____________________________________________________________________________________________
   case 0x01: // кнопка "dBm/dB/W"
@@ -183,7 +188,7 @@ break;
         IndxClrMEM = 0;
         break;
       }
-        NeedSaveChange |=0x10; // сохраняем пользовательские изменения (Номер волокна и признак авто инкремента)
+      NeedSaveChange |=0x10; // сохраняем пользовательские изменения (Номер волокна и признак авто инкремента)
       break;
     }
     break;
@@ -293,7 +298,7 @@ break;
       else
         IndxShowLN=0;
       break;
-  //============ АВТОМАТ    
+      //============ АВТОМАТ    
     case At:
       if(Mod_At == View)
       {
@@ -519,58 +524,58 @@ break;
         {
           SetupMod=sNumF; 
         }
-       else 
-       {
-         if(N_LS) // есть источники
-       SetupMod=sSCp; 
-       else
-       SetupMod=sVer; 
-       }
+        else 
+        {
+          if(N_LS) // есть источники
+            SetupMod=sSCp; 
+          else
+            SetupMod=sVer; 
+        }
         break;
       case sNumF:
-       SetupMod=sMem;
-       IndxClrMEM=0;
+        SetupMod=sMem;
+        IndxClrMEM=0;
         break;
       case sMem:
-       SetupMod=sLOSS; 
+        SetupMod=sLOSS; 
         break;
       case sLOSSm:
-       SetupMod=sLOSS; 
+        SetupMod=sLOSS; 
         break;
       case sLOSS:
-                 if(N_LS) // есть источники
-       SetupMod=sSCp; 
-       else
-       SetupMod=sVer; 
+        if(N_LS) // есть источники
+          SetupMod=sSCp; 
+        else
+          SetupMod=sVer; 
         break;
       case sSCp:
-                 if(DeviceConfig.CfgL) // есть ТЕСТЕР АВТОМАТ (измеритель длины)
-       SetupMod=sORL; 
-       else
-       SetupMod=sVer; 
+        if(DeviceConfig.CfgL) // есть ТЕСТЕР АВТОМАТ (измеритель длины)
+          SetupMod=sORL; 
+        else
+          SetupMod=sVer; 
         break;
       case sORL:
-       //SetupMod=sSWm; 
-       SetupMod=sVer; // сразу прыгаем на версию 30/09/2022
+        //SetupMod=sSWm; 
+        SetupMod=sVer; // сразу прыгаем на версию 30/09/2022
         break;
       case sSWm:
-       SetupMod=sVer; 
+        SetupMod=sVer; 
         break;
       case sVer:
-       SetupMod=sTime; 
+        SetupMod=sTime; 
         break;
       default:
-       SetupMod=sTime; 
+        SetupMod=sTime; 
         break;
       }
       NeedReDraw=1;
-
+      
       break;
     case Ln:
       //memset(DataLN,0, ARRAY_SIZE(DataLN)); // чистим массив данных приема
       SW5V(1);// ON 5V включим 
-     ttt=3000000;
-     while(ttt--);
+      ttt=3000000;
+      while(ttt--);
       
       memset(DataLN,0, NUMMEASLN*SEQMEASLN*2); // чистим массив данных приема
       lSofn = 1; //справа
@@ -579,45 +584,45 @@ break;
       IndxShowLN = 0; // снова на первое измерение
       for (int i=0;i<NUMMEASLN;i++)
       {
-      CountLN=0; // чистим счетчик отражений
-     ttt=30000;
-     CntLnCount=i;
-     TIM2->PSC = 0; // обнуляем таймер измерения длины (один импульс 25 тиков)
-     TIM3->PSC = 0;        
-     // ставим таймер 2 на режим мастер запрос, импульс в начале счета
-     //TIM2->ARR = 20+xImp;
-     TIM2->ARR = 20+ImpZ[i];
-     TIM2->CCR1 = 20; // Zimp = 100-20
-     
-     TIM2->CNT = 0; // обнуляем таймер измерения длины (один импульс 25 тиков)
-     TIM3->CNT = 0;        
-
-     HAL_TIM_PWM_Start (&htim3, TIM_CHANNEL_3 ); // вроде как надо запустить таймеры
-     Beg_Evnt = DWT_CYCCNT; // запоминаем текущий счетчик
-     // запускаем импульс
-     HAL_TIM_PWM_Start (&htim2, TIM_CHANNEL_1 ); // вроде как надо запустить таймеры
-     // надобы потупить
-     while(ttt--);
-     //CntLnCount++;
+        CountLN=0; // чистим счетчик отражений
+        ttt=30000;
+        CntLnCount=i;
+        TIM2->PSC = 0; // обнуляем таймер измерения длины (один импульс 25 тиков)
+        TIM3->PSC = 0;        
+        // ставим таймер 2 на режим мастер запрос, импульс в начале счета
+        //TIM2->ARR = 20+xImp;
+        TIM2->ARR = 20+ImpZ[i];
+        TIM2->CCR1 = 20; // Zimp = 100-20
+        
+        TIM2->CNT = 0; // обнуляем таймер измерения длины (один импульс 25 тиков)
+        TIM3->CNT = 0;        
+        
+        HAL_TIM_PWM_Start (&htim3, TIM_CHANNEL_3 ); // вроде как надо запустить таймеры
+        Beg_Evnt = DWT_CYCCNT; // запоминаем текущий счетчик
+        // запускаем импульс
+        HAL_TIM_PWM_Start (&htim2, TIM_CHANNEL_1 ); // вроде как надо запустить таймеры
+        // надобы потупить
+        while(ttt--);
+        //CntLnCount++;
       }
       SW5V(0);// OFF 5V выключим 
-
+      
       break;
     case At: // Запуск измерений в режиме АВТОМАТ
-        if ((Mod_At == Wt)||(Mod_At == View))
-        {
-          FirstInput = 1;// первый раз вошли 
-          Mod_At = Orl; // вызываем режим измерения ORL
-          Ini_At_var(); // инициализация переменных режима At
-          
-//          Cnt_SPw = 0; // индекс перебора источников в команде
-//          Pow_SC_Tx = 0.0; // мощность принятго источника по умолчанию
-//          Err_Cmd_At=0; //сброс ошибок приема в режиме At
-//          Start_Cmd = 2;
-//          Mod_At_cnt=0; // сброс счетчика таймера команды
-          //NumIzm++; // новое измерение
-        }
-
+      if ((Mod_At == Wt)||(Mod_At == View))
+      {
+        FirstInput = 1;// первый раз вошли 
+        Mod_At = Orl; // вызываем режим измерения ORL
+        Ini_At_var(); // инициализация переменных режима At
+        
+        //          Cnt_SPw = 0; // индекс перебора источников в команде
+        //          Pow_SC_Tx = 0.0; // мощность принятго источника по умолчанию
+        //          Err_Cmd_At=0; //сброс ошибок приема в режиме At
+        //          Start_Cmd = 2;
+        //          Mod_At_cnt=0; // сброс счетчика таймера команды
+        //NumIzm++; // новое измерение
+      }
+      
       break;
     }
     break;
@@ -674,8 +679,8 @@ break;
         ScMode=OFFs;
         break;
       }
-              ControlSC (ScMode); //// управление источником 
-
+      ControlSC (ScMode); //// управление источником 
+      
       break;  
     case SetFn: // перебор режимов
       switch(ConSet)
@@ -811,16 +816,16 @@ break;
       switch(SetupMod)
       {
       case sTime:
-      if(IndxEditClock>0)IndxEditClock--;
-      else IndxEditClock = 6;
-            break;
+        if(IndxEditClock>0)IndxEditClock--;
+        else IndxEditClock = 6;
+        break;
       case sNumF:
-      if(IndxEditNumFbr<5)IndxEditNumFbr++;
-      else IndxEditNumFbr = 0;
-            break;
+        if(IndxEditNumFbr<5)IndxEditNumFbr++;
+        else IndxEditNumFbr = 0;
+        break;
       case sLOSSm:
-          if((UserMeasConfig.Lim_LS[IndxEditLOSSm]+0.5)>-100.0 ) UserMeasConfig.Lim_LS[IndxEditLOSSm] -=0.5;
-          else UserMeasConfig.Lim_LS[IndxEditLOSSm]=10.;
+        if((UserMeasConfig.Lim_LS[IndxEditLOSSm]+0.5)>-100.0 ) UserMeasConfig.Lim_LS[IndxEditLOSSm] -=0.5;
+        else UserMeasConfig.Lim_LS[IndxEditLOSSm]=10.;
         break;
       case sLOSS:
         //if(IndxEditLOSS)
@@ -844,8 +849,8 @@ break;
         }
         break;
       }
-            NeedReDraw=1;
-    break;      
+      NeedReDraw=1;
+      break;      
     }
     break; // sw Left
     //____________________________________________________________________________________________
@@ -867,41 +872,41 @@ break;
       //memset(BuffP2,IN_BuffADC[1], ARRAY_SIZE(BuffP2)); // Резко перезапишем буффер
       NeedReDraw = 1;
       break;
-      case Sc: // Source place switch
-        // переключаем ЛАЗЕРЫ
-        GetSetLW_SC (1, 0) ; // установим индекс выбранного источника для измерения
-        IndxP2LW = GetIndxLW(DeviceConfig.PlaceLS[Ind_LW]); // получим индекс настроенного P2, для правильной работы ORL
-        indx_LW_ORL = Ind_LW ; // установим индекс выбранного источника для измерения
-
-//         if(++Ind_LW>2) Ind_LW=0;
-//   
-//            if(DeviceConfig.PlaceLS[Ind_LW]==0)
-//                       if(++Ind_LW>2) Ind_LW=0;
-//            
-//            if(DeviceConfig.PlaceLS[Ind_LW]==0)
-//                       if(++Ind_LW>2) Ind_LW=0;
-
-         //SWITCH_LW();
-         //indx_LW_ORL = GetIndxLW(DeviceConfig.PlaceLS[Ind_LW]); // найдем индекс длины волны уст источника в списке калибровочных длин волн
-        break;
-      case Rl: // Source place switch
-        // переключаем ЛАЗЕРЫ
-        GetSetLW_SC (1, 1) ; // установим индекс выбранного источника для измерения
-        IndxP2LW = GetIndxLW(DeviceConfig.PlaceLS[Ind_LW]); // получим индекс настроенного P2, для правильной работы ORL
-        indx_LW_ORL = Ind_LW ; // установим индекс выбранного источника для измерения
-
-//         if(++Ind_LW>2) Ind_LW=0;
-//   
-//            if(DeviceConfig.PlaceLS[Ind_LW]==0)
-//                       if(++Ind_LW>2) Ind_LW=0;
-//            
-//            if(DeviceConfig.PlaceLS[Ind_LW]==0)
-//                       if(++Ind_LW>2) Ind_LW=0;
-
-         //SWITCH_LW();
-         //indx_LW_ORL = GetIndxLW(DeviceConfig.PlaceLS[Ind_LW]); // найдем индекс длины волны уст источника в списке калибровочных длин волн
-        break;
-        
+    case Sc: // Source place switch
+      // переключаем ЛАЗЕРЫ
+      GetSetLW_SC (1, 0) ; // установим индекс выбранного источника для измерения
+      IndxP2LW = GetIndxLW(DeviceConfig.PlaceLS[Ind_LW]); // получим индекс настроенного P2, для правильной работы ORL
+      indx_LW_ORL = Ind_LW ; // установим индекс выбранного источника для измерения
+      
+      //         if(++Ind_LW>2) Ind_LW=0;
+      //   
+      //            if(DeviceConfig.PlaceLS[Ind_LW]==0)
+      //                       if(++Ind_LW>2) Ind_LW=0;
+      //            
+      //            if(DeviceConfig.PlaceLS[Ind_LW]==0)
+      //                       if(++Ind_LW>2) Ind_LW=0;
+      
+      //SWITCH_LW();
+      //indx_LW_ORL = GetIndxLW(DeviceConfig.PlaceLS[Ind_LW]); // найдем индекс длины волны уст источника в списке калибровочных длин волн
+      break;
+    case Rl: // Source place switch
+      // переключаем ЛАЗЕРЫ
+      GetSetLW_SC (1, 1) ; // установим индекс выбранного источника для измерения
+      IndxP2LW = GetIndxLW(DeviceConfig.PlaceLS[Ind_LW]); // получим индекс настроенного P2, для правильной работы ORL
+      indx_LW_ORL = Ind_LW ; // установим индекс выбранного источника для измерения
+      
+      //         if(++Ind_LW>2) Ind_LW=0;
+      //   
+      //            if(DeviceConfig.PlaceLS[Ind_LW]==0)
+      //                       if(++Ind_LW>2) Ind_LW=0;
+      //            
+      //            if(DeviceConfig.PlaceLS[Ind_LW]==0)
+      //                       if(++Ind_LW>2) Ind_LW=0;
+      
+      //SWITCH_LW();
+      //indx_LW_ORL = GetIndxLW(DeviceConfig.PlaceLS[Ind_LW]); // найдем индекс длины волны уст источника в списке калибровочных длин волн
+      break;
+      
     case SetPrm:
       // переключаемся по установкам
       switch(SetupMod)
@@ -910,83 +915,83 @@ break;
         if(IndxEditNumFbr)
         {
           Vel= (uint32_t)(pow(10,IndxEditNumFbr-1));
-         dCh=(SettingPrm.NumberFbrCount/Vel)%10;
-         SettingPrm.NumberFbrCount-=(uint16_t)(dCh*Vel);
-         if(dCh<((IndxEditNumFbr<5)?(9):(5))) dCh++;
-         else dCh = 0;
-         SettingPrm.NumberFbrCount+=(uint16_t)(dCh*Vel);
+          dCh=(SettingPrm.NumberFbrCount/Vel)%10;
+          SettingPrm.NumberFbrCount-=(uint16_t)(dCh*Vel);
+          if(dCh<((IndxEditNumFbr<5)?(9):(5))) dCh++;
+          else dCh = 0;
+          SettingPrm.NumberFbrCount+=(uint16_t)(dCh*Vel);
         }
         break;
       case sTime:
-      switch(IndxEditClock)
-      {
-      case 1: //Year
-        if(Clocks.cYear<43) Clocks.cYear++;
-        else  Clocks.cYear=21;
-        break;
-      case 2: //Month
-        if(Clocks.cMonth<12) Clocks.cMonth++;
-        else  Clocks.cMonth=1;
-        break;
-      case 3: //Day
-        switch(Clocks.cMonth)
+        switch(IndxEditClock)
         {
-        case 1:
-        case 3:
-        case 5:
-        case 7:
-        case 8:
-        case 10:
-        case 12:
-          DayMax = 31;
+        case 1: //Year
+          if(Clocks.cYear<43) Clocks.cYear++;
+          else  Clocks.cYear=21;
           break;
-        case 4:
-        case 6:
-        case 9:
-        case 11:
-          DayMax = 30;
+        case 2: //Month
+          if(Clocks.cMonth<12) Clocks.cMonth++;
+          else  Clocks.cMonth=1;
           break;
-        case 2:
-          if(Clocks.cYear%4) DayMax = 28;
-          else DayMax = 29;
+        case 3: //Day
+          switch(Clocks.cMonth)
+          {
+          case 1:
+          case 3:
+          case 5:
+          case 7:
+          case 8:
+          case 10:
+          case 12:
+            DayMax = 31;
+            break;
+          case 4:
+          case 6:
+          case 9:
+          case 11:
+            DayMax = 30;
+            break;
+          case 2:
+            if(Clocks.cYear%4) DayMax = 28;
+            else DayMax = 29;
+            break;
+          }
+          if(Clocks.cDay<DayMax) Clocks.cDay++;
+          else  Clocks.cDay=1;
+          break;
+        case 4: //Hour
+          if(Clocks.cHour<23)Clocks.cHour++;
+          else Clocks.cHour=0;
+          break;
+        case 5: //Minutes
+          if(Clocks.cMinutes<59)Clocks.cMinutes++;
+          else Clocks.cMinutes=0;
+          break;
+        case 6: //Seconds
+          if(Clocks.cSeconds<59)Clocks.cSeconds++;
+          else Clocks.cSeconds=0;
           break;
         }
-        if(Clocks.cDay<DayMax) Clocks.cDay++;
-        else  Clocks.cDay=1;
         break;
-      case 4: //Hour
-        if(Clocks.cHour<23)Clocks.cHour++;
-        else Clocks.cHour=0;
-        break;
-      case 5: //Minutes
-        if(Clocks.cMinutes<59)Clocks.cMinutes++;
-        else Clocks.cMinutes=0;
-        break;
-      case 6: //Seconds
-        if(Clocks.cSeconds<59)Clocks.cSeconds++;
-        else Clocks.cSeconds=0;
-        break;
-      }
-      break;
       case sLOSSm:
-      if(IndxEditLOSSm==0)IndxEditLOSSm=1;
-      else IndxEditLOSSm = 0;
+        if(IndxEditLOSSm==0)IndxEditLOSSm=1;
+        else IndxEditLOSSm = 0;
         break;
       case sLOSS:
-      //if(IndxEditLOSS>0)IndxEditLOSS--;
-      //else IndxEditLOSS = 3;
+        //if(IndxEditLOSS>0)IndxEditLOSS--;
+        //else IndxEditLOSS = 3;
         break;
       case sORL:
-      //if(IndxEditORL>0)IndxEditORL--;
-      //else IndxEditORL = 3;
+        //if(IndxEditORL>0)IndxEditORL--;
+        //else IndxEditORL = 3;
         break;
       case sSWm:
-      if(IndxEnaSave>0)IndxEnaSave--;
-      else IndxEnaSave = 3;
+        if(IndxEnaSave>0)IndxEnaSave--;
+        else IndxEnaSave = 3;
         break;
       case sSCp:
-      if(IndxPowSC>0)IndxPowSC--;
-      else IndxPowSC = 3;
+        if(IndxPowSC>0)IndxPowSC--;
+        else IndxPowSC = 3;
         break;
       }
       
@@ -1022,39 +1027,39 @@ break;
       //memset(BuffP2,IN_BuffADC[1], ARRAY_SIZE(BuffP2)); // Резко перезапишем буффер
       NeedReDraw = 1;
       break;
-      case Sc: // Source place switch
-        // переключаем ЛАЗЕРЫ
-        GetSetLW_SC (1, 0) ; // установим индекс выбранного источника для измерения
-        IndxP2LW = GetIndxLW(DeviceConfig.PlaceLS[Ind_LW]); // получим индекс настроенного P2, для правильной работы ORL
-        indx_LW_ORL = Ind_LW ; // установим индекс выбранного источника для измерения
-
-//         if(++Ind_LW>2) Ind_LW=0;
-//   
-//            if(DeviceConfig.PlaceLS[Ind_LW]==0)
-//                       if(++Ind_LW>2) Ind_LW=0;
-//            
-//            if(DeviceConfig.PlaceLS[Ind_LW]==0)
-//                       if(++Ind_LW>2) Ind_LW=0;
-
-         //SWITCH_LW();
-         //indx_LW_ORL = GetIndxLW(DeviceConfig.PlaceLS[Ind_LW]); // найдем индекс длины волны уст источника в списке калибровочных длин волн
-        break;
-      case Rl: // Source place switch
-        // Переключаем ЛАЗЕРЫ
-        GetSetLW_SC (1, 1) ;// установим индекс выбранного источника для измерения Ind_LW
-        IndxP2LW = GetIndxLW(DeviceConfig.PlaceLS[Ind_LW]); // получим индекс настроенного P2, для правильной работы ORL
-        indx_LW_ORL = Ind_LW ;// установим индекс выбранного источника для измерения в P2
-
-        //         if(++Ind_LW>2) Ind_LW=0;
-//   
-//            if(DeviceConfig.PlaceLS[Ind_LW]==0)
-//                       if(++Ind_LW>2) Ind_LW=0;
-//            
-//            if(DeviceConfig.PlaceLS[Ind_LW]==0)
-//                       if(++Ind_LW>2) Ind_LW=0;
-         //SWITCH_LW();
-         //indx_LW_ORL = GetIndxLW(DeviceConfig.PlaceLS[Ind_LW]); // найдем индекс длины волны уст источника в списке калибровочных длин волн
-        break;
+    case Sc: // Source place switch
+      // переключаем ЛАЗЕРЫ
+      GetSetLW_SC (1, 0) ; // установим индекс выбранного источника для измерения
+      IndxP2LW = GetIndxLW(DeviceConfig.PlaceLS[Ind_LW]); // получим индекс настроенного P2, для правильной работы ORL
+      indx_LW_ORL = Ind_LW ; // установим индекс выбранного источника для измерения
+      
+      //         if(++Ind_LW>2) Ind_LW=0;
+      //   
+      //            if(DeviceConfig.PlaceLS[Ind_LW]==0)
+      //                       if(++Ind_LW>2) Ind_LW=0;
+      //            
+      //            if(DeviceConfig.PlaceLS[Ind_LW]==0)
+      //                       if(++Ind_LW>2) Ind_LW=0;
+      
+      //SWITCH_LW();
+      //indx_LW_ORL = GetIndxLW(DeviceConfig.PlaceLS[Ind_LW]); // найдем индекс длины волны уст источника в списке калибровочных длин волн
+      break;
+    case Rl: // Source place switch
+      // Переключаем ЛАЗЕРЫ
+      GetSetLW_SC (1, 1) ;// установим индекс выбранного источника для измерения Ind_LW
+      IndxP2LW = GetIndxLW(DeviceConfig.PlaceLS[Ind_LW]); // получим индекс настроенного P2, для правильной работы ORL
+      indx_LW_ORL = Ind_LW ;// установим индекс выбранного источника для измерения в P2
+      
+      //         if(++Ind_LW>2) Ind_LW=0;
+      //   
+      //            if(DeviceConfig.PlaceLS[Ind_LW]==0)
+      //                       if(++Ind_LW>2) Ind_LW=0;
+      //            
+      //            if(DeviceConfig.PlaceLS[Ind_LW]==0)
+      //                       if(++Ind_LW>2) Ind_LW=0;
+      //SWITCH_LW();
+      //indx_LW_ORL = GetIndxLW(DeviceConfig.PlaceLS[Ind_LW]); // найдем индекс длины волны уст источника в списке калибровочных длин волн
+      break;
     case SetPrm:
       // переключаемся по установкам
       switch(SetupMod)
@@ -1063,87 +1068,87 @@ break;
         if(IndxEditNumFbr)
         {
           Vel= (uint32_t)(pow(10,IndxEditNumFbr-1));
-         dCh=(SettingPrm.NumberFbrCount/Vel)%10;
-         SettingPrm.NumberFbrCount-=(uint16_t)(dCh*Vel);
-         if(dCh>0) dCh--;
-         else dCh =(IndxEditNumFbr<5)?(9):(5);
-         SettingPrm.NumberFbrCount+=(uint16_t)(dCh*Vel);
+          dCh=(SettingPrm.NumberFbrCount/Vel)%10;
+          SettingPrm.NumberFbrCount-=(uint16_t)(dCh*Vel);
+          if(dCh>0) dCh--;
+          else dCh =(IndxEditNumFbr<5)?(9):(5);
+          SettingPrm.NumberFbrCount+=(uint16_t)(dCh*Vel);
         }
         break;
       case sTime:
-      switch(IndxEditClock)
-      {
-      case 1: //Year
-        if(Clocks.cYear>22) Clocks.cYear--;
-        else  Clocks.cYear=43;
-        break;
-      case 2: //Month
-        if(Clocks.cMonth>1) Clocks.cMonth--;
-        else  Clocks.cMonth=12;
-        break;
-      case 3: //Day
-        switch(Clocks.cMonth)
+        switch(IndxEditClock)
         {
-        case 1:
-        case 3:
-        case 5:
-        case 7:
-        case 8:
-        case 10:
-        case 12:
-          DayMax = 31;
+        case 1: //Year
+          if(Clocks.cYear>22) Clocks.cYear--;
+          else  Clocks.cYear=43;
           break;
-        case 4:
-        case 6:
-        case 9:
-        case 11:
-          DayMax = 30;
+        case 2: //Month
+          if(Clocks.cMonth>1) Clocks.cMonth--;
+          else  Clocks.cMonth=12;
           break;
-        case 2:
-          if(Clocks.cYear%4) DayMax = 28;
-          else DayMax = 29;
+        case 3: //Day
+          switch(Clocks.cMonth)
+          {
+          case 1:
+          case 3:
+          case 5:
+          case 7:
+          case 8:
+          case 10:
+          case 12:
+            DayMax = 31;
+            break;
+          case 4:
+          case 6:
+          case 9:
+          case 11:
+            DayMax = 30;
+            break;
+          case 2:
+            if(Clocks.cYear%4) DayMax = 28;
+            else DayMax = 29;
+            break;
+          }
+          if(Clocks.cDay>1) Clocks.cDay--;
+          else  Clocks.cDay=DayMax;
+          break;
+        case 4: //Hour
+          if(Clocks.cHour>0)Clocks.cHour--;
+          else Clocks.cHour=23;
+          break;
+        case 5: //Minutes
+          if(Clocks.cMinutes>0)Clocks.cMinutes--;
+          else Clocks.cMinutes=59;
+          break;
+        case 6: //Seconds
+          if(Clocks.cSeconds>0)Clocks.cSeconds--;
+          else Clocks.cSeconds=59;
           break;
         }
-        if(Clocks.cDay>1) Clocks.cDay--;
-        else  Clocks.cDay=DayMax;
         break;
-      case 4: //Hour
-        if(Clocks.cHour>0)Clocks.cHour--;
-        else Clocks.cHour=23;
+      case sLOSSm:
+        if(IndxEditLOSSm)IndxEditLOSSm=0;
+        else IndxEditLOSSm = 1;
         break;
-      case 5: //Minutes
-        if(Clocks.cMinutes>0)Clocks.cMinutes--;
-        else Clocks.cMinutes=59;
+      case sLOSS:
+        //if(IndxEditLOSS<3)IndxEditLOSS++;
+        //else IndxEditLOSS = 0;
         break;
-      case 6: //Seconds
-        if(Clocks.cSeconds>0)Clocks.cSeconds--;
-        else Clocks.cSeconds=59;
-        break;
-      }
-      break;
-            case sLOSSm:
-      if(IndxEditLOSSm)IndxEditLOSSm=0;
-      else IndxEditLOSSm = 1;
-        break;
-            case sLOSS:
-      //if(IndxEditLOSS<3)IndxEditLOSS++;
-      //else IndxEditLOSS = 0;
-        break;
-            case sORL:
-      //if(IndxEditORL<3)IndxEditORL++;
-      //else IndxEditORL = 0;
+      case sORL:
+        //if(IndxEditORL<3)IndxEditORL++;
+        //else IndxEditORL = 0;
         break;
       case sSWm:
-      if(IndxEnaSave<3)IndxEnaSave++;
-      else IndxEnaSave = 0;
+        if(IndxEnaSave<3)IndxEnaSave++;
+        else IndxEnaSave = 0;
         break;
       case sSCp:
-      if(IndxPowSC<3)IndxPowSC++;
-      else IndxPowSC = 0;
+        if(IndxPowSC<3)IndxPowSC++;
+        else IndxPowSC = 0;
         break;
       case sMem:
-      if(IndxClrMEM)IndxClrMEM=0;
-      else IndxClrMEM = 1;
+        if(IndxClrMEM)IndxClrMEM=0;
+        else IndxClrMEM = 1;
         break;
       }
       NeedReDraw = 1;
@@ -1158,7 +1163,7 @@ break;
       ConSet = CondWork; // устанавливаем этот режим в переменной переключателя
       CondWork = SetFn; // устанавливаем текущий режим как Выбор Режимов
       SW_RS232(1); // сигнал управления оптическим приемом с усилителя (AD7782) (с другого пользуем только в Автомате)
-
+      
       if (ModeI != dBm) ModeI=dBm;
       SSD1305_Fill(0); /* очистка экрана*/
       switch (ConSet)
@@ -1188,20 +1193,20 @@ break;
         switch(SetupMod)
         {
         case sTime:
-        // фиксируем установленное время 
-        //RTC_WriteTimeCounter(&hrtc,TotalSec()); // for F103
-        ReSetRegRTC(1,&hrtc);// запишем новую дату F303
-
-        break;
+          // фиксируем установленное время 
+          //RTC_WriteTimeCounter(&hrtc,TotalSec()); // for F103
+          ReSetRegRTC(1,&hrtc);// запишем новую дату F303
+          
+          break;
         case sNumF:
-        NeedSaveChange |=0x10; // сохраняем пользовательские изменения (Номер волокна и признак авто инкремента)
+          NeedSaveChange |=0x10; // сохраняем пользовательские изменения (Номер волокна и признак авто инкремента)
           break;
         case sLOSSm:
         case sLOSS:
         case sORL:
         case sSWm:
         case sSCp:
-        NeedSaveChange |=0x11; // сохраняем пользовательские изменения (Номер волокна и признак авто инкремента)
+          NeedSaveChange |=0x11; // сохраняем пользовательские изменения (Номер волокна и признак авто инкремента)
           break;
         }
         CondWork = SetFn; // возврат в режим выбора режимов
@@ -1215,7 +1220,7 @@ break;
       //ShowBatLvl(BatLevel);
       ShowChooseMode();
       SW5V(0);// OFF 5V
-
+      
       NeedReDraw=1;
     }
     else // зашли второй раз изменяем функцию 
@@ -1551,17 +1556,21 @@ break;
              if(SettingPrm.CountMemory<512)
              {
                WriteBlockMEM (1); // запись блока данных в память, отделной функцией для UART EXT
-
+               
              }
              CountDrawMsg = 7;
              break;
            case At: // сохранение результатов измерения
+             // test
+             myBeep(305);
+             NumMyBeep = 15;
+             
              if(Mod_At == View)
              {
-             if(SettingPrm.CountMemory<512)
-             {
-               WriteBlockMEM (1); // запись блока данных в память, отделной функцией для UART EXT
-             }
+               if(SettingPrm.CountMemory<512)
+               {
+                 WriteBlockMEM (1); // запись блока данных в память, отделной функцией для UART EXT
+               }
                Mod_At = Wt;
                FirstInput=1;
                NeedReDraw = 1;

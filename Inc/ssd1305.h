@@ -90,7 +90,7 @@ extern uint8_t SSD1305_I2C_ADDR ;
  *           - 0: LCD was not detected on I2C port
  *           - > 0: LCD initialized OK and ready to use
  */
-uint8_t SSD1305_Init(void);
+uint8_t SSD1305_Init(int Mode);
 
 /** 
  * @brief  Updates buffer from internal RAM to LCD
