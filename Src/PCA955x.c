@@ -122,6 +122,7 @@ HAL_StatusTypeDef CtrlExpand ( uint16_t PinOut, uint16_t Mask, uint8_t ModeS) //
   {
     // попробуем на ходу поправить I2C 
     // если вдруг получится
+    CntErrI2C++;
       CntErrKbrd = 0x10 + StatusI2C2;
     FixErrI2C();
     StatusI2C2 =  TOP_I2C_IsDeviceReady(&hi2c1, (uint16_t)(KEYBOARD<<1), 1, 1000); // если эта микросхема???

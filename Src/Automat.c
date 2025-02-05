@@ -394,7 +394,7 @@ void Run_At (void)
       Mod_At_cnt=0; // сброс счетчика таймера команды
       
       // memory!!!
-      //NeedSaveChange = 0x10; // сохраним мощность источника своего переденного от Slave
+      NeedSaveChange = 0x10; // сохраним мощность источника своего переденного от Slave
       //PMWavelenght = DeviceConfig.PlaceLS[Ind_LW]; // в строку вывода записываем длину волны передаваемого источника
       NeedReDraw = 10;
       TestDraw();
