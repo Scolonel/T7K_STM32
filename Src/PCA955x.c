@@ -117,7 +117,7 @@ HAL_StatusTypeDef CtrlExpand ( uint16_t PinOut, uint16_t Mask, uint8_t ModeS) //
   volatile uint16_t InPin1 = (PinOut & 0x100)>>1; // устанавливаем бит дл€ младшего байта управлени€
   volatile uint16_t InPin2 = PinOut & Mask; //   
   
-  StatusI2C2 =  TOP_I2C_IsDeviceReady(&hi2c1, (uint16_t)(KEYBOARD<<1), 1, 1000); // если эта микросхема???
+  StatusI2C2 =  TOP_I2C_IsDeviceReady(&hi2c1, (uint16_t)(KEYBOARD<<1), 1, 100); // если эта микросхема???
   if (StatusI2C2)
   {
     // попробуем на ходу поправить I2C 
@@ -125,7 +125,7 @@ HAL_StatusTypeDef CtrlExpand ( uint16_t PinOut, uint16_t Mask, uint8_t ModeS) //
     CntErrI2C++;
       CntErrKbrd = 0x10 + StatusI2C2;
     FixErrI2C();
-    StatusI2C2 =  TOP_I2C_IsDeviceReady(&hi2c1, (uint16_t)(KEYBOARD<<1), 1, 1000); // если эта микросхема???
+    StatusI2C2 =  TOP_I2C_IsDeviceReady(&hi2c1, (uint16_t)(KEYBOARD<<1), 1, 100); // если эта микросхема???
     if (StatusI2C2)
     {
       CntErrKbrd = 0x100 + StatusI2C2;
@@ -135,14 +135,14 @@ HAL_StatusTypeDef CtrlExpand ( uint16_t PinOut, uint16_t Mask, uint8_t ModeS) //
   // сначала младший байт переустанавливаем в соответствии с PinOUT
   // read current stats LOEW byte
   BufTX[0] = 0;   // пишем команду  0 - значит принимаем младший первый 
-  StatusI2C2 = TOP_I2C_Master_Transmit(&hi2c1, (uint16_t)(KEYBOARD<<1), BufTX, 1, 1000);
+  StatusI2C2 = TOP_I2C_Master_Transmit(&hi2c1, (uint16_t)(KEYBOARD<<1), BufTX, 1, 100);
   if (StatusI2C2)
   {
     CntErrKbrd = 0x20 + StatusI2C2;
     return StatusI2C2;
   }
   // читаем 2 байта ( вроде как ) младший первый
-  StatusI2C2 = TOP_I2C_Master_Receive(&hi2c1, (uint16_t)(KEYBOARD<<1), BufRX, 2, 1000); // считываем два байта значений установленных портов
+  StatusI2C2 = TOP_I2C_Master_Receive(&hi2c1, (uint16_t)(KEYBOARD<<1), BufRX, 2, 100); // считываем два байта значений установленных портов
   if (StatusI2C2)
   {
     CntErrKbrd = 0x40 + StatusI2C2;
@@ -164,7 +164,7 @@ HAL_StatusTypeDef CtrlExpand ( uint16_t PinOut, uint16_t Mask, uint8_t ModeS) //
   BufTX[1] = BufRX[0]; 
   BufTX[2] = BufRX[1]; 
   // write NEW stat in IC LOW Byte
-  StatusI2C2 = TOP_I2C_Master_Transmit(&hi2c1, (uint16_t)(KEYBOARD<<1), BufTX, 3, 1000);
+  StatusI2C2 = TOP_I2C_Master_Transmit(&hi2c1, (uint16_t)(KEYBOARD<<1), BufTX, 3, 100);
   if (StatusI2C2)
   {
     CntErrKbrd = 0x80 + StatusI2C2;
