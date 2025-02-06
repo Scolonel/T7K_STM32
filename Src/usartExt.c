@@ -1021,7 +1021,7 @@ void ParseCMD (void) // разбор данных принятых по uart1
                   KeyCode = 0x02; //
                   break;
                 }
-                sprintf(((void*)AnsData, "%d(%d)-%d(%02X):%d\r",Mod_At_cnt,NeedReDraw,CntErrI2C,CntErrKbrd,CntErrAuto);//тест вывод
+                sprintf((void*)AnsData, "%d(%d)-%d(%02X):%d\r",Mod_At_cnt,NeedReDraw,CntErrI2C,CntErrKbrd,CntErrAuto);//тест вывод
 
                 //sprintf((void*)AnsData,"%d\r",NumMyBeep);
                 EnaSendAns = 0;
@@ -1288,8 +1288,10 @@ void ParseOptic (void) // разбор данных принятых по uart2 (OPTIC)
   iParamOpt = 0;
     if(DataRdyUart2 && CntRXOpt)
   {
-    
-  sprintf((char*)Strf,"%s",RxBufOpt) ;
+ 
+  //sprintf((char*)Strf,"(%d-%d)%s\r",TxOptBusy,CntRXOpt,RxBufOpt) ;
+  sprintf((char*)Strf,"(%d)%s\r",TxOptBusy,RxBufOpt) ;
+         HAL_UART_Transmit_DMA(&huart1, (void*)Strf,strlen((void*)Strf)); // выдаем 
     //myBeep(100);// что то приняли попробуем разобрать
     OpticCMD = NOTcmd; // нет команд
     for (int i=0; i <CntRXOpt; i++)//цикл преобразования регистра

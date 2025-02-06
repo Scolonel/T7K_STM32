@@ -105,7 +105,9 @@ TAB_PONAUTO PonA; // структура  данных PON AUTO
 uint16_t CalibLnAuto; // смещение длины после калибровки в режиме автомат!
 uint8_t StrAnsverData[32]; // строка тестовая для передачи данных о принятых ответов
 int Indxi; //вспомогательный индекс для уменьшения расчетов 
-
+// выделим область для строк приема в режиме мастер или слэйв
+char MemBufReciev[16][32];
+uint32_t CntAutoMode = 0; // счетчик принятых ответов по оптике в режиме тестер автомат
 // футкция тестового отбражение
 void TestDraw (void)
 {
@@ -115,6 +117,16 @@ void TestDraw (void)
 uint32_t CntErrI2C; // счетчик ошибок I2C  
 uint32_t CntErrKbrd; // счетчик ошибок I2C чтение клавиатуры! 
 uint32_t CntErrAuto; // счетчик ошибок авто режима! 
+// копируем строку приема в память
+void BufOptCopyMem (void)
+{
+  if(CntAutoMode < 15)
+  {
+    CntAutoMode++;
+    //memcpy(MemBufReciev,
+  }
+}
+
 // поиск индекса калибровочной длины волны по ее значению
 int iClbFromLW (uint16_t LWi)
 {
@@ -151,6 +163,9 @@ void Ini_At_var(void) // инициализация переменных Ат режима
     //LNCalc = 0;
   }
   PonA.LnA=0;
+  // чистим память оптического приема
+  //memset(MemBufReciev,512);
+  CntAutoMode = 0;
 }
 
 
