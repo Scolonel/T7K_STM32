@@ -1290,7 +1290,7 @@ void ParseOptic (void) // разбор данных принятых по uart2 (OPTIC)
   {
  
   //sprintf((char*)Strf,"(%d-%d)%s\r",TxOptBusy,CntRXOpt,RxBufOpt) ;
-  sprintf((char*)Strf,"(%d)%s\r",TxOptBusy,RxBufOpt) ;
+  sprintf((char*)Strf,"(%.1f)(%d-%d)%s\r",MediumP2,Mod_At_cnt,TxOptBusy,RxBufOpt) ;
          HAL_UART_Transmit_DMA(&huart1, (void*)Strf,strlen((void*)Strf)); // выдаем 
     //myBeep(100);// что то приняли попробуем разобрать
     OpticCMD = NOTcmd; // нет команд
