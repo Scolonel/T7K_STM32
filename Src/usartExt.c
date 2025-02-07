@@ -1003,32 +1003,34 @@ void ParseCMD (void) // разбор данных принятых по uart1
                 break;
               }
             }
-            if (!memcmp ((void*)&RxBufExt[5], "KEY",3)) // запрос режима или его установка
-            {
-              switch(RxBufExt[8])
-              {
-              case ' ': // проверим есть установка режима и разрешен ли он
-                params[0] = atoi((char*)&RxBufExt[9]); // get param for setting
-                switch(params[0])
-                {
-                case 1:
-                  KeyCode = 0x04; //
-                  break;
-                case 2:
-                  KeyCode = 0x7B; //
-                  break;
-                case 3:
-                  KeyCode = 0x02; //
-                  break;
-                }
-                sprintf((void*)AnsData, "%d(%d)-%d(%02X):%d\r",Mod_At_cnt,NeedReDraw,CntErrI2C,CntErrKbrd,CntErrAuto);//тест вывод
-
-                //sprintf((void*)AnsData,"%d\r",NumMyBeep);
-                EnaSendAns = 0;
-
-                break;
-              }
-            }
+            // Функция обработки команд нажатых клавиш
+//            if (!memcmp ((void*)&RxBufExt[5], "KEY",3)) // запрос режима или его установка
+//            {
+//              switch(RxBufExt[8])
+//              {
+//              case ' ': // проверим есть установка режима и разрешен ли он
+//                params[0] = atoi((char*)&RxBufExt[9]); // get param for setting
+//                switch(params[0])
+//                {
+//                case 1:
+//                  KeyCode = 0x04; //
+//                  break;
+//                case 2:
+//                  KeyCode = 0x7B; //
+//                  break;
+//                case 3:
+//                  KeyCode = 0x02; //
+//                  break;
+//                }
+//                sprintf((void*)AnsData, "%d(%d)-%d(%02X):%d\r",Mod_At_cnt,NeedReDraw,CntErrI2C,CntErrKbrd,CntErrAuto);//тест вывод
+//
+//                //sprintf((void*)AnsData,"%d\r",NumMyBeep);
+//                EnaSendAns = 0;
+//
+//                break;
+//              }
+//            }
+            //
             if (!memcmp ((void*)&RxBufExt[5], "MOD",3)) // запрос режима или его установка
             {
               
@@ -1282,16 +1284,16 @@ void ParseOptic (void) // разбор данных принятых по uart2 (OPTIC)
   unsigned short Temp = 0;
   // signed int iTemp;
   //unsigned char *up;
-
+  
   volatile uint32_t BeginStr = CntRXOpt; // ищем указатель на начало посылки для разбора
   fParamOpt = 0.0;
   iParamOpt = 0;
-    if(DataRdyUart2 && CntRXOpt)
+  if(DataRdyUart2 && CntRXOpt)
   {
- 
-  //sprintf((char*)Strf,"(%d-%d)%s\r",TxOptBusy,CntRXOpt,RxBufOpt) ;
-  sprintf((char*)Strf,"(%.1f)(%d-%d)%s\r",MediumP2,Mod_At_cnt,TxOptBusy,RxBufOpt) ;
-         HAL_UART_Transmit_DMA(&huart1, (void*)Strf,strlen((void*)Strf)); // выдаем 
+    // Было! Тестовый вывод во внешний мир того что приняли по оптике
+    //sprintf((char*)Strf,"(%d-%d)%s\r",TxOptBusy,CntRXOpt,RxBufOpt) ;
+    //sprintf((char*)Strf,"(%.1f)(%d-%d)%s\r",MediumP2,Mod_At_cnt,TxOptBusy,RxBufOpt) ;
+    //HAL_UART_Transmit_DMA(&huart1, (void*)Strf,strlen((void*)Strf)); // выдаем 
     //myBeep(100);// что то приняли попробуем разобрать
     OpticCMD = NOTcmd; // нет команд
     for (int i=0; i <CntRXOpt; i++)//цикл преобразования регистра
@@ -1348,7 +1350,7 @@ void ParseOptic (void) // разбор данных принятых по uart2 (OPTIC)
       }
       if (!memcmp ((void*)&RxBufOpt[BeginStr], "#YP",3)) //прием мощности излучаемого источника измеренной противоположной стороной
       {
-          fParamOpt = atof((char*)(&RxBufOpt[BeginStr+3])); // фиксируем значение,позже надо переписать в соотв поле(для индикации)
+        fParamOpt = atof((char*)(&RxBufOpt[BeginStr+3])); // фиксируем значение,позже надо переписать в соотв поле(для индикации)
         OpticCMD = YPcmd;
       }
       if (!memcmp ((void*)&RxBufOpt[BeginStr], "#SWM",4)) //прием команды от Мастера - 
@@ -1369,7 +1371,7 @@ void ParseOptic (void) // разбор данных принятых по uart2 (OPTIC)
         //TsT(1);
         SW5V(1);// ON 5V
         //TsT(0);
-
+        
       }
       if (!memcmp ((void*)&RxBufOpt[BeginStr], "#SLO",4)) //прием длины волны и значения ORL от Slave
       {
@@ -1380,89 +1382,89 @@ void ParseOptic (void) // разбор данных принятых по uart2 (OPTIC)
         }
         OpticCMD = SLOcmd;
       }
-
+      
       break;
     }
-//    // повторим обработку как в "Старом" приборе
-//    // Установим указатель на начало строки
-//    up=(unsigned char*)&RxBufOpt[BeginStr]; // указательна начало строки то есть символ "#"
-//    // сделаем разбор строки по символьно в зависимости от режима
-//        switch (RxBufOpt[BeginStr+1]) // первый символ команды
-//    {
-//    case 'S':
-//      switch (RxBufOpt[BeginStr+2]) // второй символ команды
-//      {
-//      case 'L':                           //Установка длины волны измерения  ###SL1310 -0.12
-//        {
-//          // режим P1a P2
-//          if (CondWork==P1a) //тут1300(CondWork==P2)||
-//          {
-//            if(
-//            Temp=atoi((char*)(up+3));   //преобразование символьной в числовую
-//            if ((Temp<800)||(Temp>1650))Temp = 0;
-//            else
-//            {
-//              //MemoryData.mLW[0] = Temp;
-//              P1aWavelenght = Temp;
-//              CntWaitLW = 0; // сброс счетчика ожидания приема длины волны
-//              YesLW=1; // включаем счетчик управления измерителем и получения результатов
-//              SetModePM(1); // устаналиваем автоматический режим P1 - для получения измерения
-//              CurrSpectrKoeff = GetCoeffSpctr(P1aWavelenght,0);//приведенное значение мощности в миливатах, для данной длины волны
-//              
-//            }
-//            // можно словить уровень для "полного Авто"
-//            if(RxBufOpt[BeginStr+7]==0x20) // если есть в приеме значение мощности
-//            {
-//              PowSC_Ext = atof((char*)(up+7)); // фиксируем значение,позже надо переписать в соотв поле(для индикации)
-//            }
-//            else
-//              PowSC_Ext = 0.;
-//            for(int i=0; i < WAVE_LENGTHS_NUM; ++i) // переберем ячейки RPON на наличие значений
-//            {
-//              if(CalibrLW[i] == P1aWavelenght)
-//                BaseExtLvl[i]=PowSC_Ext; 
-//            }
-//          } // for P1a
-//          if(CondWork==At) // тестер автомат
-//          {
-//            if(RxBufOpt[BeginStr+3]=='A' // read SLA..
-//            {
-//            }
-//          }
-//        }
-//               break; // 'SL' второй символ
-//      }
-//      break; // 'S'  первый символ
-//    case 'Y':
-//              if ((Mod_At == SavPw)&&(RxBufOpt[BeginStr+2]=='P'))
-//        {
-////          PwLvl= atof((char*)(up+3)); // есть ответ мощности источника
-////          PwS[Ind_LW] = PwLvl;
-////          Cnt_SPw++;
-////          if ( Cnt_SPw < NumFrstLS)Mod_At_cnt = 0;
-////          else //закончили калибровку ист. переходим к длинне
-////          {
-////            Mod_At_cnt=0;
-////            Start_Cmd = 2;
-////            Mod_At = LnR_Clb;
-////            sprintf(Str4, "  eaeea?iaea  ");
-////            sprintf(Str5, "    aeeiu     ");
-////            ShowMsg(30);
-////            // ReWrite_SetConst();// ia?acaienu a iaiyou 
-////          }
-//        }
-//
-//      break;// первый символ 'Y'
-//    }
+    //    // повторим обработку как в "Старом" приборе
+    //    // Установим указатель на начало строки
+    //    up=(unsigned char*)&RxBufOpt[BeginStr]; // указательна начало строки то есть символ "#"
+    //    // сделаем разбор строки по символьно в зависимости от режима
+    //        switch (RxBufOpt[BeginStr+1]) // первый символ команды
+    //    {
+    //    case 'S':
+    //      switch (RxBufOpt[BeginStr+2]) // второй символ команды
+    //      {
+    //      case 'L':                           //Установка длины волны измерения  ###SL1310 -0.12
+    //        {
+    //          // режим P1a P2
+    //          if (CondWork==P1a) //тут1300(CondWork==P2)||
+    //          {
+    //            if(
+    //            Temp=atoi((char*)(up+3));   //преобразование символьной в числовую
+    //            if ((Temp<800)||(Temp>1650))Temp = 0;
+    //            else
+    //            {
+    //              //MemoryData.mLW[0] = Temp;
+    //              P1aWavelenght = Temp;
+    //              CntWaitLW = 0; // сброс счетчика ожидания приема длины волны
+    //              YesLW=1; // включаем счетчик управления измерителем и получения результатов
+    //              SetModePM(1); // устаналиваем автоматический режим P1 - для получения измерения
+    //              CurrSpectrKoeff = GetCoeffSpctr(P1aWavelenght,0);//приведенное значение мощности в миливатах, для данной длины волны
+    //              
+    //            }
+    //            // можно словить уровень для "полного Авто"
+    //            if(RxBufOpt[BeginStr+7]==0x20) // если есть в приеме значение мощности
+    //            {
+    //              PowSC_Ext = atof((char*)(up+7)); // фиксируем значение,позже надо переписать в соотв поле(для индикации)
+    //            }
+    //            else
+    //              PowSC_Ext = 0.;
+    //            for(int i=0; i < WAVE_LENGTHS_NUM; ++i) // переберем ячейки RPON на наличие значений
+    //            {
+    //              if(CalibrLW[i] == P1aWavelenght)
+    //                BaseExtLvl[i]=PowSC_Ext; 
+    //            }
+    //          } // for P1a
+    //          if(CondWork==At) // тестер автомат
+    //          {
+    //            if(RxBufOpt[BeginStr+3]=='A' // read SLA..
+    //            {
+    //            }
+    //          }
+    //        }
+    //               break; // 'SL' второй символ
+    //      }
+    //      break; // 'S'  первый символ
+    //    case 'Y':
+    //              if ((Mod_At == SavPw)&&(RxBufOpt[BeginStr+2]=='P'))
+    //        {
+    ////          PwLvl= atof((char*)(up+3)); // есть ответ мощности источника
+    ////          PwS[Ind_LW] = PwLvl;
+    ////          Cnt_SPw++;
+    ////          if ( Cnt_SPw < NumFrstLS)Mod_At_cnt = 0;
+    ////          else //закончили калибровку ист. переходим к длинне
+    ////          {
+    ////            Mod_At_cnt=0;
+    ////            Start_Cmd = 2;
+    ////            Mod_At = LnR_Clb;
+    ////            sprintf(Str4, "  eaeea?iaea  ");
+    ////            sprintf(Str5, "    aeeiu     ");
+    ////            ShowMsg(30);
+    ////            // ReWrite_SetConst();// ia?acaienu a iaiyou 
+    ////          }
+    //        }
+    //
+    //      break;// первый символ 'Y'
+    //    }
     // чистим следы когда обработали 
     memset(RxBufOpt,0, BUFF_SIZE_RX); // чистим буффер того что приняли
     DataRdyUart2 = 0;
     CntRXOpt = 0; // сброс счетчика приема, для ожидания принятия ответов)
     HAL_NVIC_EnableIRQ(USART2_IRQn);
     NeedReDraw = 1;
-
-    }
-
+    
+  }
+  
 }
 // прием побайтно- не очень класно
 void HAL_UART_RxOptCallback(UART_HandleTypeDef *huart)
