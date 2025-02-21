@@ -118,6 +118,8 @@ HAL_StatusTypeDef CtrlExpand ( uint16_t PinOut, uint16_t Mask, uint8_t ModeS) //
   volatile uint16_t InPin2 = PinOut & Mask; //   
   
   StatusI2C2 =  TOP_I2C_IsDeviceReady(&hi2c1, (uint16_t)(KEYBOARD<<1), 1, 100); // если эта микросхема???
+#if defined (STM32F103x6) || defined (STM32F103xB) || defined (STM32F105xC) || defined (STM32F107xC) || defined (STM32F103xE) || defined (STM32F103xG) || \
+    defined (STM32F205xx)
   if (StatusI2C2)
   {
     // попробуем на ходу поправить I2C 
@@ -132,6 +134,7 @@ HAL_StatusTypeDef CtrlExpand ( uint16_t PinOut, uint16_t Mask, uint8_t ModeS) //
       return StatusI2C2;
     }
   }
+#endif
   // сначала младший байт переустанавливаем в соответствии с PinOUT
   // read current stats LOEW byte
   BufTX[0] = 0;   // пишем команду  0 - значит принимаем младший первый 

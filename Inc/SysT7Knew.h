@@ -96,6 +96,9 @@
     defined (STM32F205xx)
 #define Clr_UART huart2.Instance->DR
 //#define REG_ISR huart->Instance->SR
+    // проверка на BUSY I2C и сразу правка
+// попытка быстро востановить I2C 
+void FixErrI2C(void);
 
 #endif
 
@@ -277,9 +280,6 @@ uint16_t LnA; // Длина линии
 
 } TAB_PONAUTO;
 
-    // проверка на BUSY I2C и сразу правка
-// попытка быстро востановить I2C 
-void FixErrI2C(void);
 
 // for DrawFunction
 extern uint8_t Str[64];
