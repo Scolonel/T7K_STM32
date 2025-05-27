@@ -23,7 +23,7 @@
    const char* StrRl[]= {"   Измеритель "," обр.отраж.(ORL)"};
    const char* StrLs[]= {"   Измеритель ","   затухани\xff   "};
    const char* StrAt[]= {"    ТЕСТЕР    ","    АВТОМАТ   "};
-   const char* StrScMode[]={"@ OFF","@ CW","@ 270Hz","@ 2kHz","@ CW*"};
+   const char* StrScMode[]={"@ OFF  ","@ CW   ","@ 270Hz","@ 2kHz ","@ CW*  "};
    const char* StrVFLMode[]={"@ OFF","@ CW","@ 1Hz"};
    const char* StrNFa[]={"Номер волокна"};
    const char* StrNFb[]={"Авто +"};
@@ -42,6 +42,9 @@ uint8_t Stri[8];
 uint8_t Str2[32]; // разрядность индикации в режиме  
 uint8_t StrDrM[4]; // строка отображения режима работы на индикаторе
 uint8_t StrBat[4]; // строка отображения режима работы на индикаторе
+uint8_t Stram[32];
+uint8_t Strbm[32];
+uint8_t StrOutI[32]; // 
 
 uint8_t StPon1[3][5], StPon2[3][8], StPon3[3][8]; //строки для многострочных выводов из составляющих
 
@@ -506,10 +509,12 @@ void ShowVer(void)
       break;
     }
     SSD1305_Fill(0); /* очистка экрана*/
+    // копируем строку индикации P1 в выводную строку команды "SI" старого прибора
+        sprintf((void*)StrOutI, "%s", Str2);
     
     //выводим показания
     SSD1305_GotoXY(12,0);
-    SSD1305_PutsN((void*)Str2, (void*)TabSG3, 1);
+    SSD1305_PutsN((void*)StrOutI, (void*)TabSG3, 1);
     // вывод  уровня опоры (REF)
     sprintf((char*)Strb,"%.2f", CurrBaseLevel) ;
     SSD1305_GotoXY(85,24);
@@ -775,6 +780,10 @@ void ShowVer(void)
     sprintf((char*)Strb,"%.2f", UserMeasConfig.BaseLvlP2[IndxP2LW]) ;
     
     SSD1305_Fill(0); /* очистка экрана*/
+
+        // копируем строку индикации P1 в выводную строку команды "SI" старого прибора
+        sprintf((void*)StrOutI, "%s", Strc);
+
     
     SSD1305_GotoXY(12,0);
     SSD1305_PutsN((void*)Strc, (void*)TabSG3, 1);// крупные буквы Значение мощности
@@ -961,12 +970,12 @@ void ShowVer(void)
       
       SSD1305_Fill(0); /* очистка экрана*/
       
-      sprintf((char*)Stra,"%s",MsgAuto[0]) ; // 1 строчка сообщения
+      sprintf((char*)Stram,"%s",MsgAuto[0]) ; // 1 строчка сообщения
       SSD1305_GotoXY(12,0);
-      SSD1305_PutsN((void*)Stra, (void*)TabSG2, 1);// мелкие буквы верхняя строка
-      sprintf((char*)Strb,"%s",MsgAuto[1]) ; // 2 строчка сообщения
+      SSD1305_PutsN((void*)Stram, (void*)TabSG2, 1);// мелкие буквы верхняя строка
+      sprintf((char*)Strbm,"%s",MsgAuto[1]) ; // 2 строчка сообщения
       SSD1305_GotoXY(12,8);
-      SSD1305_PutsN((void*)Strb, (void*)TabSG2, 1);// мелкие буквы вторая строка
+      SSD1305_PutsN((void*)Strbm, (void*)TabSG2, 1);// мелкие буквы вторая строка
       //SSD1305_GotoXY(12,16);
       //SSD1305_PutsN((void*)Strd, (void*)TabSG2, 1);// мелкие буквы вторая строка
       sprintf((char*)Strd,"%04dнм",LW_I) ; // строка длина волны, режима автомат
@@ -1108,36 +1117,36 @@ void ShowVer(void)
     switch(ConSet)
     {
     case P1:
-      sprintf((char*)Stra,"%s",StrP1[0]) ;
-      sprintf((char*)Strb,"%s",StrP1[1]) ;
+      sprintf((char*)Stram,"%s",StrP1[0]) ;
+      sprintf((char*)Strbm,"%s",StrP1[1]) ;
       break;
     case P1a:
-      sprintf((char*)Stra,"%s",StrP1a[0]) ;
-      sprintf((char*)Strb,"%s",StrP1a[1]) ;
+      sprintf((char*)Stram,"%s",StrP1a[0]) ;
+      sprintf((char*)Strbm,"%s",StrP1a[1]) ;
       break;
     case RE:
-      sprintf((char*)Stra,"%s",StrRE[0]) ;
-      sprintf((char*)Strb,"%s",StrRE[1]) ;
+      sprintf((char*)Stram,"%s",StrRE[0]) ;
+      sprintf((char*)Strbm,"%s",StrRE[1]) ;
       break;
     case Sc:
-      sprintf((char*)Stra,"%s",StrSc[0]) ;
-      sprintf((char*)Strb,"%s",StrSc[1]) ;
+      sprintf((char*)Stram,"%s",StrSc[0]) ;
+      sprintf((char*)Strbm,"%s",StrSc[1]) ;
       break;
     case P2:
-      sprintf((char*)Stra,"%s",StrP2[0]) ;
-      sprintf((char*)Strb,"%s",StrP2[1]) ;
+      sprintf((char*)Stram,"%s",StrP2[0]) ;
+      sprintf((char*)Strbm,"%s",StrP2[1]) ;
       break;
     case Ln:
-      sprintf((char*)Stra,"%s",StrLn[0]) ;
-      sprintf((char*)Strb,"%s",StrLn[1]) ;
+      sprintf((char*)Stram,"%s",StrLn[0]) ;
+      sprintf((char*)Strbm,"%s",StrLn[1]) ;
       break;
     case Rl:
-      sprintf((char*)Stra,"%s",StrRl[0]) ;
-      sprintf((char*)Strb,"%s",StrRl[1]) ;
+      sprintf((char*)Stram,"%s",StrRl[0]) ;
+      sprintf((char*)Strbm,"%s",StrRl[1]) ;
       break;
     case At:
-      sprintf((char*)Stra,"%s",StrAt[0]) ;
-      sprintf((char*)Strb,"%s",StrAt[1]) ;
+      sprintf((char*)Stram,"%s",StrAt[0]) ;
+      sprintf((char*)Strbm,"%s",StrAt[1]) ;
       break;
       
     }
@@ -1151,9 +1160,9 @@ void ShowVer(void)
     sprintf((char*)Strd,"20%02d/%02d/%02d %02d:%02d:%02d",Clocks.cYear,Clocks.cMonth,Clocks.cDay,Clocks.cHour,Clocks.cMinutes,Clocks.cSeconds) ;
     
     SSD1305_GotoXY(12,0);
-    SSD1305_PutsN((void*)Stra, (void*)TabSG2, 1);// мелкие буквы
+    SSD1305_PutsN((void*)Stram, (void*)TabSG2, 1);// мелкие буквы
     SSD1305_GotoXY(12,10);
-    SSD1305_PutsN((void*)Strb, (void*)TabSG2, 1);// мелкие буквы
+    SSD1305_PutsN((void*)Strbm, (void*)TabSG2, 1);// мелкие буквы
     SSD1305_GotoXY(12,24);
     SSD1305_PutsN((void*)Strd, (void*)TabSG2, 1);// мелкие буквы
     

@@ -218,6 +218,98 @@ void ParseCMD (void) // разбор данных прин€тых по uart1
     //memset(AnsData,0, ARRAY_SIZE(AnsData)); // чистим буффер передачи!
     if (RxBufExt[CntRX-1]==0xd) // ASCII commands enable (check \r in end commands)
     {
+      // команды с # - дл€ старого прибора "проба" дл€ ƒ.Ѕ.
+      if (!memcmp ((void*)RxBufExt, "#",1)) // commands begin '*'
+      {
+        // запрос идентификатора 
+        if (!memcmp ((void*)&RxBufExt[1], "IDN",3))
+        {
+          sprintf ((void*)AnsData, "$%04dV1%c%c%c%01d%s\r", // убираем VFL из идентификатора -VFL (у чехов оставим)
+                   DeviceConfig.NumDevice,
+                   (DeviceConfig.CfgOUT[0]||DeviceConfig.CfgOUT[1]||DeviceConfig.CfgOUT[2])?('d'):(' '), // 
+                   (DeviceConfig.CfgRE & 0x1)?('.'):(' '), //красный глаз
+                   (DeviceConfig.CfgL)?('L'):(' '), // L- автомат
+                   (DeviceConfig.YearManuf%10), // L- автомат
+                   DeviceConfig.NameDevice);//(g_ConfigDevice.ID_Device)?("EN"):("RU")
+          
+          //    HAL_UART_Transmit_DMA(&huart3, (void*)ID_Dev,strlen((void*)ID_Dev)); // выдаем идентификатор
+        }
+        // запрос версии ѕќ
+        if (!memcmp ((void*)&RxBufExt[1], "IDV",3))
+        {
+          sprintf ((void*)AnsData, "$Ver 1.%04d date %02d.%02d.20%02d\r", // убираем VFL из идентификатора -VFL (у чехов оставим)
+                   NumVer,
+                   RELEASEDATE,
+                   RELEASEMONTH,
+                   RELEASEYEAR);//(g_ConfigDevice.ID_Device)?("EN"):("RU")
+          
+          //    HAL_UART_Transmit_DMA(&huart3, (void*)ID_Dev,strlen((void*)ID_Dev)); // выдаем идентификатор
+        }
+       // команда SI (выдает многострочный ответ - режим и содержимое индикатора
+        if (!memcmp ((void*)&RxBufExt[1], "SI",2))
+        {
+          // имитаци€ дл€ старого индикатора - там строки... 
+          // 1 - –ежим с буквой M - они немного не согласованы ...$M10:
+          // 2 - значение которое большой строкой в индикаторе... (P1 - мощность) 
+          // 3 - индикатор длины волны (рабочий)... лева€ нижн€€ строка без nm 
+          // 4, 5 -  наименование двухсточное из переключени€ режимов, и сообщений в тестере автомат...
+          // 6 - строка отображени€ режима источника (не знаю когда он есть или всегда даже если его нет)наименование и состо€ние @ CW*___1
+          // 7 - строка из правого нижнего угла в соответствующем режиме
+                EnaSendAns = CondWork*10;
+                switch(CondWork)
+                {
+                case 0: // выбор режима 
+                  EnaSendAns +=ConSet;
+                  sprintf((void*)AnsData,"$M%02d\n%s\n%s\n%s\n%s\n%s %c\n%s\r",EnaSendAns,StrOutI,Strb,Stram,Strbm,StrScMode[ScMode],(lSofn)?('1'):('0'),Strd);
+                  
+                  break;
+                case 1: // P1
+                  EnaSendAns += ModeI;
+                  sprintf((void*)AnsData,"$M%d\n%s\n%s\n%s\n%s\n%s %c\n%s\r",EnaSendAns,StrOutI,Strc,Stram,Strbm,StrScMode[ScMode],(lSofn)?('1'):('0'),Strb);
+                  break;
+                case 2: // P1a
+                  EnaSendAns += ModeIP1a;
+                  //sprintf((void*)AnsData,"%d\n%d\n%s %s %s\n",EnaSendAns,BatLevel,StPon1[0],StPon2[0],StPon3[0]);
+                  //sprintf((void*)AnsData,"%s%s %s %s\r",AnsData,StPon1[1],StPon2[1],StPon3[1]);
+                  //sprintf((void*)AnsData,"%s%s %s %s\r",AnsData,StPon1[2],StPon2[2],StPon3[2]);
+                  //sprintf((void*)AnsData,"%s%s\n%s\n%s\r",AnsData,Strd,Strc,Strm);
+                  sprintf((void*)AnsData,"$M%d\n%s\n%s\n%s\n%s\n%s %c\n%s\r",EnaSendAns,StrOutI,Strd,Stram,Strbm,StrScMode[ScMode],(lSofn)?('1'):('0'),Strc);
+                  break;
+                case 3: // Sc
+                  EnaSendAns += ScMode;
+                  //sprintf((void*)AnsData,"%d\n%d\n%s\n%s\n%s\n%s\n%s\r",EnaSendAns,BatLevel,Strc,Strb,Stra,Strm,Strd);
+                  sprintf((void*)AnsData,"$M%d\n%s\n%s %s\n%s\n%s\n%s %c\n%s\r",EnaSendAns,StrOutI,Stra,Strm,Stram,Strbm,StrScMode[ScMode],(lSofn)?('1'):('0'),Strb);
+                  break;
+                case 4: // P2
+                  EnaSendAns += P2Mode;
+                  //sprintf((void*)AnsData,"%d\n%d\n%s\n%s\n%s\n%s\r",EnaSendAns,BatLevel,Strc,Strb,Stra,Strm);
+                  sprintf((void*)AnsData,"$M%d\n%s\n%s\n%s\n%s\n%s %c\n%s\r",EnaSendAns,StrOutI,Stra,Stram,Strbm,StrScMode[ScMode],(lSofn)?('1'):('0'),Strb);
+                  break;
+                case 9: // RE
+                  EnaSendAns += ReMode;
+                  //sprintf((void*)AnsData,"%d\n%d\n%s\n%s\n%s\n%s\r",EnaSendAns,BatLevel,Strc,Strb,Stra,Strm);
+                  sprintf((void*)AnsData,"$M%d\n%s\n%s %s\n%s\n%s\n%s %c\n%s\r",EnaSendAns,StrOutI,Strb,Strc,Stram,Strbm,StrScMode[ScMode],(lSofn)?('1'):('0'),Stra);
+                  break;
+                case 5: // ORL
+                  //sprintf((void*)AnsData,"%d\n%d\n%s\n%s\n%s\n%s\r",EnaSendAns,BatLevel,Strc,Strb,Stra,Strm);
+                  sprintf((void*)AnsData,"$M%d\n%s\n%s %s\n%s\n%s\n%s %c\n%s\r",EnaSendAns,Strc,Stra,Strm,Stram,Strbm,StrScMode[ScMode],(lSofn)?('1'):('0'),Strb);
+                  break;
+                case 6: // Ln
+                  //sprintf((void*)AnsData,"%d\n%d\n%s\n%s\n%s\n%s\r",EnaSendAns,BatLevel,Strc,Strb,Stra,Strm);
+                  sprintf((void*)AnsData,"$M%d\n %s\n%s %s\n%s\n%s\n%s %c\n       \r",EnaSendAns,Strc,Stra,Strb,Stram,Strbm,StrScMode[ScMode],(lSofn)?('1'):('0'));
+                  break;
+                case 8: // TESTER AUTO
+                  //sprintf((void*)AnsData,"%d\n%d\n%s\n%s\n%s\n%s\n%s\r",EnaSendAns,BatLevel,Stra,Strb,Strd,Strc,Strm);
+                  sprintf((void*)AnsData,"$M%d\n%s\n%s\n%s\n%s\n%s %c\n%s\r",EnaSendAns,StrOutI,Strd,Stram,Strbm,StrScMode[ScMode],(lSofn)?('1'):('0'),Strc);
+                  break;
+                default:
+                  sprintf((void*)AnsData,"%d\n%d\r",EnaSendAns,BatLevel);
+                  break;
+                }
+                EnaSendAns = 0;
+          
+        }        
+      }
       // команды со *
       if (!memcmp ((void*)RxBufExt, "*",1)) // commands begin '*'
       {

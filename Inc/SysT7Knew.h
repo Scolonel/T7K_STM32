@@ -31,10 +31,11 @@
 //#define RELEASETIME 1707732000 // начальное время установки релиза 12.02.2024 10:00:00    версия - 52// 
 //#define RELEASETIME 1709287200 // начальное время установки релиза 01.03.2024 10:00:00    версия - 53// 
 //#define RELEASETIME 1729504800 // начальное время установки релиза 21.10.2024 10:00:00    версия - 54// 
-#define RELEASETIME 1738220400 // начальное время установки релиза 30.01.2025 10:00:00    версия - 57// 
+//#define RELEASETIME 1738220400 // начальное время установки релиза 30.01.2025 10:00:00    версия - 57// 
+#define RELEASETIME 1748253600 // начальное время установки релиза 26.05.2025 10:00:00    версия - 77// 
 #define RELEASEYEAR 25
-#define RELEASEMONTH 01
-#define RELEASEDATE 30
+#define RELEASEMONTH 05
+#define RELEASEDATE 26
 // время информации до автовыключения...   
 #define LASTTIMEOFF 30   
    
@@ -285,10 +286,13 @@ uint16_t LnA; // Длина линии
 extern uint8_t Str[64];
 extern uint8_t Stra[32];
 extern uint8_t Strb[32];
+extern uint8_t Stram[32]; // строки из индикации режимов 
+extern uint8_t Strbm[32]; // надписи и в сообщения в автомате!
 extern uint8_t Strc[32]; // 
 extern uint8_t Strd[32];
 extern uint8_t Stre[32];
 extern uint8_t Strf[32];
+extern uint8_t StrOutI[32]; // разрядность индикации в режиме  
 
 extern uint8_t Strm[32]; // 
 extern uint8_t Str2[32]; // разрядность индикации в режиме  
@@ -380,6 +384,20 @@ extern int CntPwrOffCount; // счетчик времени автовыключения
 // test var
 extern volatile uint16_t NumMyBeep;
 
+extern const char* StrP1[];   
+extern const char* StrP1a[];  
+extern const char* StrRE[];
+extern const char* StrSc[];
+extern const char* StrP2[];
+extern const char* StrLn[];
+extern const char* StrRl[];
+extern const char* StrLs[];
+extern const char* StrAt[];
+extern const char* StrScMode[];
+extern const char* StrVFLMode[];
+extern const char* StrNFa[];
+extern const char* StrNFb[];
+extern const char* StrdB[];
 
 
    
