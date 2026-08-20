@@ -32,10 +32,11 @@
 //#define RELEASETIME 1709287200 // начальное время установки релиза 01.03.2024 10:00:00    версия - 53// 
 //#define RELEASETIME 1729504800 // начальное время установки релиза 21.10.2024 10:00:00    версия - 54// 
 //#define RELEASETIME 1738220400 // начальное время установки релиза 30.01.2025 10:00:00    версия - 57// 
-#define RELEASETIME 1748253600 // начальное время установки релиза 26.05.2025 10:00:00    версия - 77// 
-#define RELEASEYEAR 25
-#define RELEASEMONTH 05
-#define RELEASEDATE 26
+//#define RELEASETIME 1748253600 // начальное время установки релиза 26.05.2025 10:00:00    версия - 77// 
+#define RELEASETIME 1785492000 // начальное время установки релиза 31.07.2026 10:00:00    версия - 83// 
+#define RELEASEYEAR 26
+#define RELEASEMONTH 07
+#define RELEASEDATE 31
 // время информации до автовыключения...   
 #define LASTTIMEOFF 30   
    

@@ -713,7 +713,8 @@ void ShowVer(void)
       {
       if(SettingPrm.CountMemory<511) // прог записи
       {
-        sprintf((char*)Str2,"Wr %d", SettingPrm.CountMemory) ;
+        //sprintf((char*)Str2,"Wr %d", SettingPrm.CountMemory) ;
+        sprintf((char*)Str2,"Wr%03d", SettingPrm.CountMemory) ;
         SSD1305_GotoXY(49,24);
         SSD1305_PutsN((void*)Str2, (void*)TabSG2, 1);
       }
@@ -1224,27 +1225,28 @@ void ShowVer(void)
   
   void DrawMod (uint8_t Mode)
   {
-    uint8_t ModeIndDraw=1;//1
+    //uint8_t ModeIndDraw=1;//1
     // здесь попререключаем инверсией в зависимости от времени до выключения
-    if(UserMeasConfig.AutoOff)
-    {
-     if(CntPwrOffCount<LASTTIMEOFF)
-     {
-       ModeIndDraw = CntPwrOffCount&0x1;
-       //myBeep(20);
-     }
-     else
-       ModeIndDraw = 0;
-    }
+//    if(UserMeasConfig.AutoOff)
+//    {
+//     if(CntPwrOffCount<LASTTIMEOFF)
+//     {
+//       ModeIndDraw = ;
+//       //myBeep(20);
+//     }
+//     else
+//       ModeIndDraw = 0;
+//    }
     
     sprintf((char*)StrDrM,"%c",48 + Mode) ;
     SSD1305_GotoXY(102,8);
     SSD1305_PutsN((void*)StrDrM, (void*)TabSG5, ModeIndDraw);
     // если авто выкл нарисуем кружок
-    //if(UserMeasConfig.AutoOff)
-    //{
-    // SSD1305_DrawCircle(108, 15, 7 ,1);
-    //}
+    if(UserMeasConfig.AutoOff)
+    {
+     //SSD1305_DrawCircle(108, 14, 6 ,1);
+     SSD1305_DrawCircle(108, 14, 6 ,(CntPwrOffCount<LASTTIMEOFF)?(CntPwrOffCount&0x1):(1));
+    }
     // линии для прорисовки, три белые одна черная нижняя
     SSD1305_DrawLine(102, 8, 102 ,22, 1);// вертикальная правая
     SSD1305_DrawLine(114, 8, 114 ,22, 1);// вертикальная левая

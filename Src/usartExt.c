@@ -1026,18 +1026,46 @@ void ParseCMD (void) // разбор данных принятых по uart1
         {
           if (!memcmp ((void*)&RxBufExt[1], "RMT:",4)) // 
           {
+            // если подаем команду для дистанционнго управления ,
+            // то как минимум блокируем кнопки, и включаем режим управления с индикацией инверсии 
+            // если ;RMT:DIS<cr> то разблокируем кнопки
+            ModeIndDraw = 0; // блокируем кнопки, блокировка кнопок просто не читаем кнопки...
+            // чистим поле установки авто выключение если установлено
+            NeedReDraw =1;
+            if(UserMeasConfig.AutoOff)
+            {
+              UserMeasConfig.AutoOff = 0;
+              NeedSave |=0x01;
+            }
             if (!memcmp ((void*)&RxBufExt[5], "SCR",3)) // запрос картинки индикатора
             {
               BinBlock = 579; // размер блока
               
             }
-            if (!memcmp ((void*)&RxBufExt[5], "IND",3)) // запрос блока сохранения без сохранения текущий
+            if (!memcmp ((void*)&RxBufExt[5], "IND?",4)) // запрос блока сохранения без сохранения текущий
             {
-              WriteBlockMEM (1); // запись блока данных в память, отделной функцией для UART EXT
+              WriteBlockMEM (0); // запись блока данных в память, отделной функцией для UART EXT
               memcpy(AnsData, "#265", 4 );
               memcpy( &AnsData[4], &MemoryData, 64 ); // 
               memcpy( &AnsData[68], "\r", 1 );
               BinBlock = 69; // размер блока
+              
+            }
+            //
+            if (!memcmp ((void*)&RxBufExt[5], "DAT?",4)) // запрос блока сохранения без сохранения текущий
+            {
+              WriteBlockMEM (0); //генерация блока данных текущего измерения
+              // далее разбор блока MemoryData
+              sprintf ((void*)AnsData, "20%02d/%02d/%02d %02d:%02d:%02d\n%02d\n%d\n", // 
+                       Clocks.cYear, //десятки годов
+                       Clocks.cMonth,// месяц
+                       Clocks.cDay,// день
+                       Clocks.cHour,//час
+                       Clocks.cMinutes,//минуты
+                       Clocks.cSeconds, //секунды
+                       MemoryData.mCode, // код записи для расшифровки
+                       MemoryData.mNumFiber);// Номер волокна
+              
               
             }
             if (!memcmp ((void*)&RxBufExt[5], "LW ",3)) // запрос режима или его установка
@@ -1096,32 +1124,32 @@ void ParseCMD (void) // разбор данных принятых по uart1
               }
             }
             // Функция обработки команд нажатых клавиш
-//            if (!memcmp ((void*)&RxBufExt[5], "KEY",3)) // запрос режима или его установка
-//            {
-//              switch(RxBufExt[8])
-//              {
-//              case ' ': // проверим есть установка режима и разрешен ли он
-//                params[0] = atoi((char*)&RxBufExt[9]); // get param for setting
-//                switch(params[0])
-//                {
-//                case 1:
-//                  KeyCode = 0x04; //
-//                  break;
-//                case 2:
-//                  KeyCode = 0x7B; //
-//                  break;
-//                case 3:
-//                  KeyCode = 0x02; //
-//                  break;
-//                }
-//                sprintf((void*)AnsData, "%d(%d)-%d(%02X):%d\r",Mod_At_cnt,NeedReDraw,CntErrI2C,CntErrKbrd,CntErrAuto);//тест вывод
-//
-//                //sprintf((void*)AnsData,"%d\r",NumMyBeep);
-//                EnaSendAns = 0;
-//
-//                break;
-//              }
-//            }
+            //            if (!memcmp ((void*)&RxBufExt[5], "KEY",3)) // запрос режима или его установка
+            //            {
+            //              switch(RxBufExt[8])
+            //              {
+            //              case ' ': // проверим есть установка режима и разрешен ли он
+            //                params[0] = atoi((char*)&RxBufExt[9]); // get param for setting
+            //                switch(params[0])
+            //                {
+            //                case 1:
+            //                  KeyCode = 0x04; //
+            //                  break;
+            //                case 2:
+            //                  KeyCode = 0x7B; //
+            //                  break;
+            //                case 3:
+            //                  KeyCode = 0x02; //
+            //                  break;
+            //                }
+            //                sprintf((void*)AnsData, "%d(%d)-%d(%02X):%d\r",Mod_At_cnt,NeedReDraw,CntErrI2C,CntErrKbrd,CntErrAuto);//тест вывод
+            //
+            //                //sprintf((void*)AnsData,"%d\r",NumMyBeep);
+            //                EnaSendAns = 0;
+            //
+            //                break;
+            //              }
+            //            }
             //
             if (!memcmp ((void*)&RxBufExt[5], "MOD",3)) // запрос режима или его установка
             {
@@ -1274,6 +1302,13 @@ void ParseCMD (void) // разбор данных принятых по uart1
                 EnaSendAns = 0;
               }
             }
+            if (!memcmp ((void*)&RxBufExt[5], "DIS",3)) // разблокируем кнопки
+            {
+              ModeIndDraw = 1; // разрешаем чтение кнопок
+              EnaSendOK = 1;
+              
+            }
+            
           }          
           // работа с памятью
           if (!memcmp ((void*)&RxBufExt[1], "MEM:",4)) // 

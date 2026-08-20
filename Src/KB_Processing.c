@@ -1759,13 +1759,13 @@ uint8_t SetNeedCondWork (uint8_t SetConditionWork)
 uint16_t WriteBlockMEM (uint8_t Dir) // запись блока данных в пам€ть, отделной функцией дл€ UART EXT
              {
                uint8_t yesLS;
-               uint16_t EnaWrite=0;
+               uint16_t EnaWrite=0; // пока запрет записи
                uint16_t AdrWriteMem=(uint16_t)(SettingPrm.CountMemory<<6) + ADR_SaveMemory; 
-               if((SettingPrm.CountMemory%4)==0) // начало блока (чистим блок)256 byte
-               {
-                 memcpy(&MemBlock, 0, sizeof(MemBlock));
-                 EEPROM_write(&MemBlock, AdrWriteMem , sizeof(MemBlock));
-               }
+//               if((SettingPrm.CountMemory%4)==0) // начало блока (чистим блок)256 byte
+//               {
+//                 memcpy(&MemBlock, 0, sizeof(MemBlock));
+//                 EEPROM_write(&MemBlock, AdrWriteMem , sizeof(MemBlock));
+//               }
                // зачистим-заполним пол€ по умолчанию
                MemoryData.mTime = ReSetRegRTC(0, &hrtc); // врем€ записи
                MemoryData.mNumFiber=(SettingPrm.EnaAutoInkrNF)?(++SettingPrm.NumberFbrCount):(SettingPrm.NumberFbrCount);// Ќомер волокна
@@ -1865,9 +1865,16 @@ uint16_t WriteBlockMEM (uint8_t Dir) // запись блока данных в пам€ть, отделной ф
                }
                if(EnaWrite && Dir)
                {
-               EEPROM_write(&MemoryData, AdrWriteMem , sizeof(MemoryData));
-               SettingPrm.CountMemory++;
-               EEPROM_write(&SettingPrm, ADR_SettingPrm, sizeof(SettingPrm));
+                 // ≈сли надо писать очистим блок
+                 if((SettingPrm.CountMemory%4)==0) // начало блока (чистим блок)256 byte
+                 {
+                   memcpy(&MemBlock, 0, sizeof(MemBlock));
+                   EEPROM_write(&MemBlock, AdrWriteMem , sizeof(MemBlock));
+                 }
+                 // «апишем блок
+                 EEPROM_write(&MemoryData, AdrWriteMem , sizeof(MemoryData));
+                 SettingPrm.CountMemory++;
+                 EEPROM_write(&SettingPrm, ADR_SettingPrm, sizeof(SettingPrm));
                }
                return SettingPrm.CountMemory;
              }
