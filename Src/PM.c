@@ -592,7 +592,8 @@ void SetNewBaseLevel (void)
          uint8_t yLW = SearchIndxNW (PMWavelenght);
          if(yLW) 
          {
-           SpecCoeffPM.PointSpecKalib[yLW-(WAVE_LENGTHS_NUM-1)]= CurrBaseLevel;
+          UserMeasConfig.BaseSpecKlb[yLW-(WAVE_LENGTHS_NUM)]= CurrBaseLevel;
+          //SpecCoeffPM.PointSpecKalib[yLW-(WAVE_LENGTHS_NUM-1)]= CurrBaseLevel;
          }
          else  
            // поищем среди калибованных
