@@ -65,6 +65,8 @@ extern uint8_t TabSG3[];
 extern uint8_t TabSG4[];
 extern uint8_t TabSG5[];
 extern uint8_t SSD1305_Buffer_BMP[579]  ;
+extern uint8_t SSD1305_Buffer_COLOR[512];
+
 extern uint8_t SSD1305_I2C_ADDR ;
 /* SSD1305 settings */
 /* SSD1305 width in pixels */
@@ -102,6 +104,7 @@ void SSD1305_UpdateScreen(void);
 
 void SSD1305_SwapMem(void);
 void SSD1305_GetBMP(void);
+void SSD1305_GetCOLOR(void);
 
 /**
  * @brief  Toggles pixels invertion inside internal RAM

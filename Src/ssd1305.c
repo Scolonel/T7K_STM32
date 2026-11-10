@@ -38,6 +38,9 @@ uint8_t SSD1305_Buffer_BMP[SSD1305_WIDTH * SSD1305_HEIGHT / 8 + 67 ] ={
 #include "128x32.h" //
 };
 
+/* SSD1305 data buffer for COLOR */
+uint8_t SSD1305_Buffer_COLOR[SSD1305_WIDTH * SSD1305_HEIGHT / 8 ];
+
 /* SSD1305 data buffer */
 static uint8_t SSD1305_Buffer_all[SSD1305_WIDTH * SSD1305_HEIGHT / 8 + 1], *SSD1305_Buffer = SSD1305_Buffer_all+1;
 //static uint8_t SSD1305_Buffer[SSD1305_WIDTH * SSD1305_HEIGHT / 8 ];//, *SSD1305_Buffer = SSD1305_Buffer_all+1;
@@ -356,6 +359,28 @@ void SSD1305_GetBMP(void)
   }
 }
 
+void SSD1305_GetCOLOR(void)
+{
+  /* Set memory */
+  memset(&SSD1305_Buffer_COLOR[0],  0x00, SSD1305_WIDTH * SSD1305_HEIGHT / 8);// сделаем белым
+  
+  // подготовим буффер для отображения в индикаторе 225 (там горизонтальное расположение)
+  for (int j=0 ; j<4; j++) // бежим по блокам для буф ssd1305  их 4 с нижнего то есть с четвертого у BMP это первый
+  {
+    for (int i=0 ; i<128; i++) // бежим по строкам их 4 в буф sdd1305, начиная с нижней (она перевернута) будем писать 
+      // в буфер BMP 16 байт по горизонтали 8 по вертикали
+    {
+      for (int k=0 ; k<8; k++)// разбираем байт, прописываем в соот место
+      {
+        //if(((SSD1305_Buffer[(3-j)*128 + i])<<k)&0x80) 
+        //  SSD1305_Buffer_COLOR[(j*128)+(16*k)+(i>>3)] |=(1<<(7-(i&0x7)));
+        if(((SSD1305_Buffer[(j)*128 + i])<<k)&0x80) 
+          SSD1305_Buffer_COLOR[(j*128)+(16*(7-k))+(i>>3)] |=(1<<(7-(i&0x7)));
+      }
+    }
+  }
+}
+
 //void SSD1305_UpdateScreen(void) {
 //	SSD1305_Buffer_all[0] = 0x40;
 //	HAL_I2C_Master_Transmit_DMA(&heval_I2c, SSD1305_I2C_ADDR, SSD1305_Buffer_all, SSD1305_WIDTH * SSD1305_HEIGHT / 8 + 1);
@@ -438,8 +463,8 @@ char SSD1305_Putc(char ch, FontDef_t* Font, uint8_t color) {
 	static char Smbl;
 	/* Check available space in LCD */
 	if (
-		SSD1305_WIDTH <= (SSD1305.CurrentX + Font->FontWidth) ||
-		SSD1305_HEIGHT <= (SSD1305.CurrentY + Font->FontHeight)
+		SSD1305_WIDTH <= (SSD1305.CurrentX + Font->width) ||
+		SSD1305_HEIGHT <= (SSD1305.CurrentY + Font->height)
 	) {
 		/* Error */
 		return 0;
@@ -455,9 +480,9 @@ char SSD1305_Putc(char ch, FontDef_t* Font, uint8_t color) {
     {
       Smbl = ch - 32;
     }
-	for (i = 0; i < Font->FontHeight; i++) {
-		b = Font->data[ Smbl * Font->FontHeight + i];//(ch - 32)ch
-		for (j = 0; j < Font->FontWidth; j++) {
+	for (i = 0; i < Font->height; i++) {
+		b = Font->data[ Smbl * Font->height + i];//(ch - 32)ch
+		for (j = 0; j < Font->width; j++) {
 			if ((b << j) & 0x8000) {
 				SSD1305_DrawPixel(SSD1305.CurrentX + j, (SSD1305.CurrentY + i), (uint8_t) color);
 			} else {
@@ -468,7 +493,7 @@ char SSD1305_Putc(char ch, FontDef_t* Font, uint8_t color) {
 	}
 	
 	/* Increase pointer */
-	SSD1305.CurrentX += Font->FontWidth;
+	SSD1305.CurrentX += Font->width;
 	
 	/* Return character written */
 	return ch;
@@ -916,6 +941,7 @@ void ssd1305_I2C_WriteMulti(uint8_t address, uint8_t reg, uint8_t* data, uint16_
 	//for(i = 1; i <= count; i++)
 	//	dt[i] = data[i-1];
 	HAL_I2C_Master_Transmit(&hi2c1, address, data, count+1, 1000);
+        // сюда можно добавить рисование в индикатор 225 на 7789 пока попиксельно
 }
 
 

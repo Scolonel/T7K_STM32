@@ -81,7 +81,9 @@
 
 #define TsT(a) (a)?(HAL_GPIO_WritePin(test_GPIO_Port, test_Pin, GPIO_PIN_SET)):(HAL_GPIO_WritePin(test_GPIO_Port, test_Pin, GPIO_PIN_RESET)) // ON / off test
 #define SW5V(a) (a)?(HAL_GPIO_WritePin(ENA_5V_GPIO_Port, ENA_5V_Pin, GPIO_PIN_SET)):(HAL_GPIO_WritePin(ENA_5V_GPIO_Port, ENA_5V_Pin, GPIO_PIN_RESET)) // ON / off 5V
- 
+
+#define BLK(a) (a)?(HAL_GPIO_WritePin(BLK_LCD_GPIO_Port, BLK_LCD_Pin, GPIO_PIN_SET)):(HAL_GPIO_WritePin(BLK_LCD_GPIO_Port, BLK_LCD_Pin, GPIO_PIN_RESET)) // ON / off 5V
+
 // использование таймера отладки для подсчета временных интервалов
 #define    DWT_CYCCNT    *(volatile uint32_t*)0xE0001004
 #define    DWT_CONTROL   *(volatile uint32_t*)0xE0001000
@@ -135,7 +137,7 @@ void FixErrI2C(void);
 #include "usartExt.h" // for UART 
 #include "MyClock.h"
 #include "Automat.h"
-   
+#include "st7789.h"   
    
   
    

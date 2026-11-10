@@ -1056,6 +1056,14 @@ void ParseCMD (void) // разбор данных прин€тых по uart1
             {
               WriteBlockMEM (0); //генераци€ блока данных текущего измерени€
               // далее разбор блока MemoryData
+//                uint32_t mTime; // врем€ записи
+//  uint16_t mNumFiber;// Ќомер волокна
+//  uint16_t mLW[3]; // длина волны записей (3 значени€)
+//  float mRes[3][4]; // блок записи данных (3 блока по 4 записи Float)
+//  uint16_t mLen; // длина участка
+//  uint8_t mCode; // код записи дл€ расшифровки
+//  uint8_t mFree; // резерв 
+
               sprintf ((void*)AnsData, "20%02d/%02d/%02d %02d:%02d:%02d\n%02d\n%d\n", // 
                        Clocks.cYear, //дес€тки годов
                        Clocks.cMonth,// мес€ц
@@ -1064,7 +1072,29 @@ void ParseCMD (void) // разбор данных прин€тых по uart1
                        Clocks.cMinutes,//минуты
                        Clocks.cSeconds, //секунды
                        MemoryData.mCode, // код записи дл€ расшифровки
-                       MemoryData.mNumFiber);// Ќомер волокна
+                       MemoryData.mNumFiber);
+              // далее надо дописывать в ответ данные в зависимости от режима
+              switch(CondWork)
+              {
+              case P1:
+                // длина волны
+              sprintf ((void*)Str,"%d nm", MemoryData.mLW[0]);// 
+              sprintf ((void*)AnsData,"%s%s\n", AnsData, Str);// 
+                // мощность в миливатах
+              sprintf ((void*)Str,"%E mW", MemoryData.mRes[0][0]);// 
+              sprintf ((void*)AnsData,"%s%s\n", AnsData, Str);// 
+                // мощность в dBm
+              sprintf ((void*)Str,"%.2f dBm", MemoryData.mRes[0][1]);// 
+              sprintf ((void*)AnsData,"%s%s\n", AnsData, Str);// 
+                // мощность в dB
+              sprintf ((void*)Str,"%.2f dB", MemoryData.mRes[0][2]);// 
+              sprintf ((void*)AnsData,"%s%s\n", AnsData, Str);// 
+                // опорный уровень в dBm
+              sprintf ((void*)Str,"%.2f dBm", MemoryData.mRes[0][3]);// 
+              sprintf ((void*)AnsData,"%s%s\n", AnsData, Str);// 
+                
+                break;
+              }
               
               
             }
