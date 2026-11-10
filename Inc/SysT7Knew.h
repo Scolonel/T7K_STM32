@@ -137,7 +137,7 @@ void FixErrI2C(void);
 #include "usartExt.h" // for UART 
 #include "MyClock.h"
 #include "Automat.h"
-#include "st7789.h"   
+//#include "st7789.h"   // исключаем т.к.это для пробы с LCD TFT 2.25
    
   
    
