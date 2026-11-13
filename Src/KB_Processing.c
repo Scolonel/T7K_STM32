@@ -1697,6 +1697,11 @@ uint8_t SetNeedCondWork (uint8_t SetConditionWork)
         break;
       case Rl:
         CondWork = Rl;
+        // надо проверить не на отдельный вход лазер
+        //&DeviceConfig.CfgOUT
+        if(DeviceConfig.CfgOUT[Ind_LW] == 0)
+          // надо поменять...
+          GetSetLW_SC (1, 1) ; // а так только на одном выходе
         //SWITCH_LW(); // установка требуемой длины волны источника
          ScMode = SCW; // управление источником - вкл. на постояннку
          //indx_LW_ORL = GetIndxLW(DeviceConfig.PlaceLS[Ind_LW]); // найдем индекс длины волны уст источника в списке калибровочных длин волн
